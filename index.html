@@ -1,0 +1,1204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Daybook — an online diary</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Lora:ital,wght@0,400;0,500;1,400&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink-navy: #171F29;
+    --ink-navy-deep: #10161E;
+    --parchment: #F3EBDC;
+    --parchment-line: #E4D7BE;
+    --wine: #7A2A38;
+    --wine-deep: #5C1F2A;
+    --sage: #7C8F6E;
+    --gold: #B9903F;
+    --text-brown: #4A3B2C;
+    --text-faint: #8A7A63;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--ink-navy);
+    background-image:
+      radial-gradient(ellipse at top left, rgba(185,144,63,0.06), transparent 55%),
+      radial-gradient(ellipse at bottom right, rgba(122,42,56,0.10), transparent 55%);
+    color: var(--text-brown);
+    font-family: 'Lora', serif;
+    min-height: 100vh;
+  }
+  button { font-family: inherit; }
+
+  /* ================= SCREENS (outer level: landing / register / login / app) ================= */
+  .screen { display: none; min-height: 100vh; }
+  .screen.active { display: block; }
+
+  /* ---- Landing ---- */
+  #screen-landing.active { display: flex; align-items: center; justify-content: center; padding: 40px 20px; }
+  .landing-wrap { max-width: 760px; text-align: center; }
+  .landing-eyebrow {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase;
+    color: var(--gold); margin-bottom: 14px;
+  }
+  .landing-title {
+    font-family: 'Fraunces', serif; font-weight: 600; font-size: clamp(34px, 6vw, 58px);
+    color: var(--parchment); line-height: 1.08; margin: 0 0 18px;
+  }
+  .landing-title em { color: var(--gold); font-style: normal; }
+  .landing-sub {
+    font-size: 16.5px; color: #C9BFA8; max-width: 520px; margin: 0 auto 34px; line-height: 1.6;
+  }
+  .landing-mock {
+    background: var(--parchment);
+    background-image: linear-gradient(var(--parchment-line) 1px, transparent 1px);
+    background-size: 100% 26px;
+    border-radius: 4px;
+    max-width: 420px;
+    margin: 0 auto 34px;
+    padding: 22px 26px;
+    box-shadow: 0 30px 70px rgba(0,0,0,0.4);
+    text-align: left;
+  }
+  .landing-mock .mock-date { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--wine-deep); letter-spacing: 0.06em; margin-bottom: 10px; }
+  .landing-mock .mock-line { height: 12px; background: rgba(74,59,44,0.14); border-radius: 2px; margin-bottom: 12px; }
+  .landing-mock .mock-line:nth-child(3) { width: 92%; }
+  .landing-mock .mock-line:nth-child(4) { width: 76%; }
+  .landing-mock .mock-line:nth-child(5) { width: 84%; }
+  .landing-actions { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; margin-bottom: 20px; }
+  .btn {
+    font-family: 'JetBrains Mono', monospace; font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase;
+    padding: 13px 26px; border-radius: 50px; cursor: pointer; border: none; transition: transform 0.15s, background 0.2s;
+  }
+  .btn:hover { transform: translateY(-1px); }
+  .btn-primary { background: var(--wine); color: var(--parchment); box-shadow: 0 4px 14px rgba(122,42,56,0.4); }
+  .btn-primary:hover { background: var(--wine-deep); }
+  .btn-ghost { background: transparent; color: var(--parchment); border: 1px solid rgba(243,235,220,0.35); }
+  .btn-ghost:hover { border-color: var(--gold); color: var(--gold); }
+  .landing-privacy { font-size: 12.5px; color: #8C8371; }
+  .landing-privacy a { color: var(--gold); text-decoration: none; }
+
+  /* ---- Auth (register / login) ---- */
+  .screen.active.auth-screen { display: flex; align-items: center; justify-content: center; min-height: 100vh; padding: 20px; }
+  .auth-card {
+    background: var(--parchment); border-radius: 4px; width: 100%; max-width: 380px;
+    padding: 36px 32px; box-shadow: 0 30px 70px rgba(0,0,0,0.5); text-align: center;
+  }
+  .auth-card .eyebrow {
+    font-family: 'JetBrains Mono', monospace; font-size: 10.5px; letter-spacing: 0.14em; text-transform: uppercase;
+    color: var(--text-faint); margin: 0 0 6px;
+  }
+  .auth-card h1 { font-family: 'Fraunces', serif; font-weight: 500; font-size: 28px; color: var(--wine-deep); margin: 0 0 6px; }
+  .auth-sub { font-size: 13.5px; color: var(--text-faint); margin: 0 0 22px; font-style: italic; }
+  .field { text-align: left; margin-bottom: 14px; }
+  .field label {
+    display: block; font-family: 'JetBrains Mono', monospace; font-size: 10.5px; letter-spacing: 0.1em;
+    text-transform: uppercase; color: var(--text-faint); margin-bottom: 6px;
+  }
+  .field input {
+    width: 100%; background: #fff; border: 1px solid var(--parchment-line); border-radius: 3px;
+    padding: 10px 12px; font-family: 'Lora', serif; font-size: 15px; color: var(--text-brown); outline: none;
+  }
+  .field input:focus { border-color: var(--gold); }
+  .field-error { font-family: 'JetBrains Mono', monospace; font-size: 11.5px; color: var(--wine); min-height: 16px; margin-bottom: 8px; }
+  .auth-card .btn-primary { width: 100%; padding: 12px; margin-top: 6px; }
+  .auth-switch {
+    margin-top: 16px; font-family: 'JetBrains Mono', monospace; font-size: 10.5px; letter-spacing: 0.05em;
+    color: var(--text-faint); background: none; border: none; cursor: pointer; text-decoration: underline;
+  }
+  .shake { animation: shake 0.35s; }
+  @keyframes shake { 0%,100%{transform:translateX(0);} 25%{transform:translateX(-6px);} 75%{transform:translateX(6px);} }
+
+  /* ================= APP SHELL (post-login) ================= */
+  #screen-app.active { display: flex; align-items: center; justify-content: center; padding: 32px 16px; }
+  .book { display: flex; width: 100%; max-width: 1000px; min-height: 660px; box-shadow: 0 30px 70px rgba(0,0,0,0.45); border-radius: 4px; overflow: hidden; }
+
+  .spine { width: 84px; background: var(--ink-navy-deep); display: flex; flex-direction: column; padding: 26px 0; flex-shrink: 0; }
+  .spine-title { writing-mode: vertical-rl; text-orientation: mixed; font-family: 'Fraunces', serif; font-size: 18px; letter-spacing: 0.06em; color: var(--parchment); padding: 0 0 20px 0; margin: 0 auto 10px auto; opacity: 0.9; }
+  .tab {
+    background: none; border: none; cursor: pointer; color: var(--text-faint); font-family: 'JetBrains Mono', monospace;
+    font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; writing-mode: vertical-rl; padding: 14px 0;
+    margin: 3px auto; border-left: 3px solid transparent; transition: color 0.2s, border-color 0.2s;
+  }
+  .tab[data-color="wine"].active { border-color: var(--wine); color: var(--wine); background: rgba(122,42,56,0.12); }
+  .tab[data-color="sage"].active { border-color: var(--sage); color: var(--sage); background: rgba(124,143,110,0.12); }
+  .tab[data-color="gold"].active { border-color: var(--gold); color: var(--gold); background: rgba(185,144,63,0.12); }
+  .tab[data-color="faint"].active { border-color: var(--text-faint); color: var(--parchment); background: rgba(255,255,255,0.06); }
+  .tab:hover { color: var(--parchment); }
+  .tab-logout { margin-top: auto !important; color: var(--wine); }
+
+  .page { flex: 1; background: var(--parchment); padding: 34px 42px 40px; position: relative; overflow-y: auto; max-height: 660px; }
+  .page::before { content: ""; position: absolute; top: 0; left: 0; right: 0; height: 6px; background: repeating-linear-gradient(90deg, transparent 0 10px, rgba(0,0,0,0.05) 10px 12px); }
+
+  .inner-view { display: none; }
+  .inner-view.active { display: block; animation: fade 0.3s ease; }
+  @keyframes fade { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
+
+  .eyebrow { font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--text-faint); margin: 0 0 6px; }
+  h1.section-heading { font-family: 'Fraunces', serif; font-weight: 500; font-size: 30px; margin: 0 0 20px; color: var(--wine-deep); line-height: 1.15; }
+
+  /* ---- Dashboard ---- */
+  .dash-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-bottom: 24px; }
+  .dash-box { background: rgba(255,255,255,0.5); border: 1px solid var(--parchment-line); border-radius: 3px; padding: 16px; text-align: center; }
+  .dash-num { font-family: 'Fraunces', serif; font-size: 30px; color: var(--wine-deep); font-weight: 500; }
+  .dash-label { font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-faint); margin-top: 4px; }
+  .dash-cta { display: flex; gap: 12px; margin-bottom: 28px; flex-wrap: wrap; }
+  .dash-recent-title { font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-faint); margin: 0 0 12px; }
+
+  /* ---- shared: entry rows ---- */
+  .entry-row { display: flex; align-items: center; gap: 16px; background: rgba(255,255,255,0.5); border: 1px solid var(--parchment-line); border-left: 3px solid var(--sage); border-radius: 2px; padding: 14px 16px; margin-bottom: 10px; cursor: pointer; transition: background 0.15s; }
+  .entry-row:hover { background: rgba(255,255,255,0.85); }
+  .entry-row.deleted-row { border-left-color: var(--wine); opacity: 0.85; }
+  .entry-row-date { flex: 0 0 108px; font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--wine-deep); line-height: 1.35; }
+  .entry-row-date .weekday { display: block; font-size: 10px; color: var(--text-faint); text-transform: uppercase; letter-spacing: 0.08em; }
+  .entry-row-glimpse { flex: 1; min-width: 0; display: flex; align-items: center; gap: 8px; font-size: 14.5px; color: var(--text-brown); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .entry-row-mood { flex-shrink: 0; font-size: 15px; }
+  .entry-row-restore { flex-shrink: 0; }
+  .row-delete-btn {
+    flex-shrink: 0; background: none; border: none; cursor: pointer;
+    color: var(--text-faint); font-size: 15px; padding: 6px; border-radius: 3px;
+    transition: color 0.15s, background 0.15s;
+  }
+  .row-delete-btn:hover { color: var(--wine); background: rgba(122,42,56,0.08); }
+  .empty-state { text-align: center; padding: 50px 20px; color: var(--text-faint); font-style: italic; font-size: 15px; }
+
+  .btn-sm.sealed { background: rgba(124,143,110,0.25); color: var(--sage); cursor: default; }
+  .auth-waking { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text-faint); margin-top: 10px; display: none; }
+  .auth-waking.active { display: block; }
+
+  /* ---- Calendar ---- */
+  .cal-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
+  .cal-header button { background: none; border: 1px solid var(--parchment-line); border-radius: 3px; width: 32px; height: 32px; cursor: pointer; color: var(--wine-deep); font-size: 15px; }
+  .cal-month-label { font-family: 'JetBrains Mono', monospace; font-size: 13px; letter-spacing: 0.06em; color: var(--text-brown); }
+  .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; }
+  .cal-dow { font-family: 'JetBrains Mono', monospace; font-size: 9.5px; text-transform: uppercase; color: var(--text-faint); text-align: center; padding-bottom: 4px; }
+  .cal-cell { aspect-ratio: 1; border-radius: 3px; border: 1px solid var(--parchment-line); background: rgba(255,255,255,0.35); display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--text-brown); position: relative; }
+  .cal-cell:hover { border-color: var(--gold); }
+  .cal-cell.empty { visibility: hidden; cursor: default; }
+  .cal-cell.written { background: rgba(185,144,63,0.16); border-color: var(--gold); }
+  .cal-cell.today { border-color: var(--wine); border-width: 2px; }
+  .cal-cell.future { opacity: 0.4; cursor: default; }
+  .cal-cell .dot { position: absolute; bottom: 4px; width: 4px; height: 4px; border-radius: 50%; background: var(--gold); }
+
+  /* ---- Daily page ---- */
+  .daily-back { background: none; border: none; cursor: pointer; font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text-faint); letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 14px; }
+  .daily-back:hover { color: var(--wine); }
+  .page-tabs { display: flex; gap: 8px; margin-bottom: 16px; }
+  .page-tab { background: rgba(255,255,255,0.4); border: 1px solid var(--parchment-line); border-radius: 3px; padding: 6px 14px; font-family: 'JetBrains Mono', monospace; font-size: 11px; cursor: pointer; color: var(--text-faint); }
+  .page-tab.active { border-color: var(--gold); color: var(--wine-deep); background: rgba(185,144,63,0.14); }
+  .page-tab.add { color: var(--sage); border-style: dashed; }
+  textarea.entry-text { width: 100%; min-height: 300px; background: transparent; border: none; resize: vertical; font-family: 'Lora', serif; font-size: 16px; line-height: 32px; color: var(--text-brown); outline: none; padding: 0; }
+  textarea.entry-text::placeholder { color: var(--text-faint); font-style: italic; }
+  textarea.entry-text:disabled { color: var(--text-brown); opacity: 0.85; }
+  .char-counter { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text-faint); text-align: right; margin-top: 4px; }
+  .char-counter.near-limit { color: var(--gold); }
+  .char-counter.at-limit { color: var(--wine); }
+  .limit-hint {
+    background: rgba(122,42,56,0.08); border: 1px solid rgba(122,42,56,0.25); border-radius: 3px;
+    padding: 10px 14px; margin-top: 8px; font-size: 13px; color: var(--wine-deep);
+    animation: fade 0.3s ease;
+  }
+  .aspira-mood { font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--gold); text-transform: uppercase; letter-spacing: 0.06em; }
+  .aspira-mood strong { color: var(--wine-deep); }
+  .aspira-prompt-label { font-family: 'JetBrains Mono', monospace; font-size: 10.5px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-faint); margin-top: 16px !important; margin-bottom: 4px !important; }
+  .aspira-prompt-text { font-style: italic; color: var(--wine-deep); }
+  .moods { display: flex; gap: 6px; }
+  .mood-btn { background: none; border: 1px solid transparent; border-radius: 50%; width: 34px; height: 34px; font-size: 17px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: border-color 0.15s, transform 0.15s; }
+  .mood-btn:hover { transform: scale(1.1); }
+  .mood-btn.selected { border-color: var(--gold); background: rgba(185,144,63,0.15); }
+  .toolbar { display: flex; align-items: center; justify-content: space-between; margin-top: 14px; flex-wrap: wrap; gap: 12px; }
+  .save-status { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--sage); margin-top: 10px; min-height: 14px; }
+  .daily-meta-row { display: flex; justify-content: space-between; align-items: center; margin-top: 18px; padding-top: 14px; border-top: 1px solid var(--parchment-line); }
+  .link-btn { background: none; border: none; cursor: pointer; font-family: 'JetBrains Mono', monospace; font-size: 10.5px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--sage); }
+  .link-btn.danger { color: var(--wine); }
+  .confirm-inline { background: rgba(122,42,56,0.08); border: 1px solid rgba(122,42,56,0.3); border-radius: 3px; padding: 12px 14px; margin-top: 10px; font-size: 13.5px; }
+  .confirm-inline .row { display: flex; gap: 10px; margin-top: 10px; }
+
+  /* ---- Buttons small ---- */
+  .btn-sm { font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; padding: 8px 16px; border-radius: 50px; cursor: pointer; border: none; }
+  .btn-sm.wine { background: var(--wine); color: var(--parchment); }
+  .btn-sm.sage { background: var(--sage); color: var(--parchment); }
+  .btn-sm.outline { background: transparent; border: 1px solid var(--parchment-line); color: var(--text-brown); }
+
+  /* ---- Wallet ---- */
+  .wallet-balance { background: rgba(185,144,63,0.12); border: 1px solid rgba(185,144,63,0.35); border-radius: 4px; padding: 22px; text-align: center; margin-bottom: 24px; }
+  .wallet-balance .coins { font-family: 'Fraunces', serif; font-size: 40px; color: var(--wine-deep); }
+  .wallet-balance .coins-label { font-family: 'JetBrains Mono', monospace; font-size: 10.5px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-faint); margin-top: 4px; }
+  .tx-row { display: flex; justify-content: space-between; align-items: center; padding: 12px 4px; border-bottom: 1px solid var(--parchment-line); font-size: 13.5px; }
+  .tx-meta { color: var(--text-faint); font-family: 'JetBrains Mono', monospace; font-size: 10.5px; }
+  .tx-amt.earn { color: var(--sage); font-family: 'JetBrains Mono', monospace; }
+  .tx-amt.spend { color: var(--wine); font-family: 'JetBrains Mono', monospace; }
+
+  /* ---- Settings ---- */
+  .settings-group { margin-bottom: 26px; }
+  .settings-group-title { font-family: 'JetBrains Mono', monospace; font-size: 10.5px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-faint); margin-bottom: 10px; }
+  .settings-row { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid var(--parchment-line); }
+  .settings-row-label { font-size: 14.5px; }
+  .settings-row-desc { font-size: 12px; color: var(--text-faint); margin-top: 2px; }
+  .theme-swatches { display: flex; gap: 8px; }
+  .swatch { width: 26px; height: 26px; border-radius: 50%; cursor: pointer; border: 2px solid transparent; }
+  .swatch.selected { border-color: var(--wine-deep); }
+
+  /* ---- Search ---- */
+  .search-row { display: flex; gap: 10px; margin-bottom: 20px; }
+  .search-row input { flex: 1; background: #fff; border: 1px solid var(--parchment-line); border-radius: 3px; padding: 9px 12px; font-family: 'Lora', serif; font-size: 14px; color: var(--text-brown); outline: none; }
+  .search-row input:focus { border-color: var(--gold); }
+
+  /* ---- modal ---- */
+  .overlay { position: fixed; inset: 0; background: rgba(16,22,30,0.6); display: none; align-items: center; justify-content: center; padding: 20px; z-index: 20; }
+  .overlay.active { display: flex; }
+  .overlay-card { background: var(--parchment); border-radius: 4px; max-width: 420px; width: 100%; padding: 28px 30px; box-shadow: 0 20px 50px rgba(0,0,0,0.4); text-align: center; }
+  .overlay-card h2 { font-family: 'Fraunces', serif; font-size: 22px; color: var(--wine-deep); margin: 0 0 10px; }
+  .overlay-card p { font-size: 14px; color: var(--text-brown); margin: 0 0 18px; line-height: 1.5; }
+  .overlay-actions-row { display: flex; gap: 10px; justify-content: center; }
+
+  @media (max-width: 640px) {
+    .book { flex-direction: column; min-height: unset; }
+    .spine { width: 100%; flex-direction: row; padding: 10px; justify-content: center; flex-wrap: wrap; }
+    .spine-title { display: none; }
+    .tab { writing-mode: horizontal-tb; padding: 8px 12px; border-left: none; border-bottom: 3px solid transparent; }
+    .tab-logout { margin-top: 0 !important; }
+    .page { max-height: none; padding: 24px 18px 30px; }
+    .dash-grid { grid-template-columns: 1fr; }
+    .landing-actions { flex-direction: column; }
+  }
+  button:focus-visible, input:focus-visible, textarea:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
+</style>
+</head>
+<body>
+
+<!-- ============ LANDING ============ -->
+<section class="screen active" id="screen-landing">
+  <div class="landing-wrap">
+    <p class="landing-eyebrow">A private place, always with you</p>
+    <h1 class="landing-title">Write it down.<br><em>Never lose it again.</em></h1>
+    <p class="landing-sub">Daybook is a personal diary that lives online — one page a day, a streak that keeps you honest, and nothing that gets torn out or left on a train.</p>
+    <div class="landing-mock">
+      <div class="mock-date">Tuesday, August 11</div>
+      <div class="mock-line" style="width:60%;"></div>
+      <div class="mock-line"></div>
+      <div class="mock-line"></div>
+      <div class="mock-line"></div>
+    </div>
+    <div class="landing-actions">
+      <button class="btn btn-primary" id="landingSignup">Sign up</button>
+      <button class="btn btn-ghost" id="landingLogin">Log in</button>
+    </div>
+    <p class="landing-privacy">Your pages stay tied to your account, never shared. <a href="#" id="landingPrivacyLink">Privacy &amp; terms</a></p>
+  </div>
+</section>
+
+<!-- ============ REGISTER ============ -->
+<section class="screen auth-screen" id="screen-register">
+  <div class="auth-card">
+    <p class="eyebrow">First page</p>
+    <h1>Create your Daybook</h1>
+    <p class="auth-sub">You'll start with 20 MindCoins on the house.</p>
+    <div class="field">
+      <label for="regEmail">Email</label>
+      <input type="email" id="regEmail" placeholder="you@example.com">
+    </div>
+    <div class="field">
+      <label for="regPassword">Password</label>
+      <input type="password" id="regPassword" placeholder="At least 6 characters">
+    </div>
+    <div class="field">
+      <label for="regPassword2">Confirm password</label>
+      <input type="password" id="regPassword2" placeholder="Type it again">
+    </div>
+    <div class="field-error" id="regError"></div>
+    <button class="btn btn-primary" id="regSubmit">Create my diary</button>
+    <p class="auth-waking" id="regWaking">Connecting... if the server's been quiet, this can take up to a minute to wake up.</p>
+    <button class="auth-switch" id="regToLogin">Already have a Daybook? Log in</button>
+  </div>
+</section>
+
+<!-- ============ LOGIN ============ -->
+<section class="screen auth-screen" id="screen-login">
+  <div class="auth-card">
+    <p class="eyebrow">Welcome back</p>
+    <h1>Log in to Daybook</h1>
+    <p class="auth-sub">Pick up right where you left off.</p>
+    <div class="field">
+      <label for="loginEmail">Email</label>
+      <input type="email" id="loginEmail" placeholder="you@example.com">
+    </div>
+    <div class="field">
+      <label for="loginPassword">Password</label>
+      <input type="password" id="loginPassword" placeholder="Your password">
+    </div>
+    <div class="field-error" id="loginError"></div>
+    <button class="btn btn-primary" id="loginSubmit">Log in</button>
+    <p class="auth-waking" id="loginWaking">Connecting... if the server's been quiet, this can take up to a minute to wake up.</p>
+    <button class="auth-switch" id="loginToRegister">New here? Sign up</button>
+  </div>
+</section>
+
+<!-- ============ APP (post-login) ============ -->
+<section class="screen" id="screen-app">
+  <div class="book">
+    <nav class="spine">
+      <div class="spine-title">Daybook</div>
+      <button class="tab active" data-color="wine" data-inner="dashboard">Home</button>
+      <button class="tab" data-color="sage" data-inner="calendar">Calendar</button>
+      <button class="tab" data-color="gold" data-inner="wallet">Wallet</button>
+      <button class="tab" data-color="faint" data-inner="deleted">Deleted</button>
+      <button class="tab" data-color="faint" data-inner="settings">Settings</button>
+      <button class="tab tab-logout" id="logoutBtn" data-color="faint">Logout</button>
+    </nav>
+
+    <main class="page">
+
+      <!-- DASHBOARD -->
+      <section class="inner-view active" id="inner-dashboard">
+        <p class="eyebrow" id="dashGreetingEyebrow"></p>
+        <h1 class="section-heading" id="dashGreeting">Welcome back</h1>
+
+        <div class="dash-grid">
+          <div class="dash-box"><div class="dash-num" id="dashCoins">0</div><div class="dash-label">MindCoins</div></div>
+          <div class="dash-box"><div class="dash-num" id="dashStreak">0</div><div class="dash-label">Day streak</div></div>
+          <div class="dash-box"><div class="dash-num" id="dashTotal">0</div><div class="dash-label">Pages written</div></div>
+        </div>
+
+        <div class="dash-cta">
+          <button class="btn btn-primary" id="writeTodayBtn">Write today's page</button>
+          <button class="btn btn-ghost" id="goCalendarBtn" style="color:var(--wine-deep); border-color:var(--parchment-line);">Browse calendar</button>
+        </div>
+
+        <p class="dash-recent-title">Recent pages</p>
+        <div id="dashRecent"></div>
+      </section>
+
+      <!-- CALENDAR -->
+      <section class="inner-view" id="inner-calendar">
+        <p class="eyebrow">Browse</p>
+        <h1 class="section-heading">Calendar</h1>
+        <div class="cal-header">
+          <button id="calPrev">‹</button>
+          <span class="cal-month-label" id="calMonthLabel"></span>
+          <button id="calNext">›</button>
+        </div>
+        <div class="cal-grid" id="calGrid"></div>
+        <div class="search-row" style="margin-top:24px;">
+          <input type="text" id="searchInput" placeholder="Search pages by word or date...">
+        </div>
+        <div id="entriesList"></div>
+      </section>
+
+      <!-- DAILY PAGE -->
+      <section class="inner-view" id="inner-daily">
+        <button class="daily-back" id="dailyBack">‹ Back</button>
+        <p class="eyebrow" id="dailyEyebrow"></p>
+        <h1 class="section-heading" id="dailyHeading"></h1>
+
+        <div class="page-tabs" id="dailyPageTabs"></div>
+
+        <textarea class="entry-text" id="entryText" placeholder="Begin wherever you are..." maxlength="2000"></textarea>
+        <div class="char-counter" id="charCounter">0 / 2000 characters</div>
+        <div class="limit-hint" id="limitHint" style="display:none;">You've reached the page limit. Use "Buy an extra page" below to keep writing today's entry.</div>
+
+        <div class="toolbar">
+          <div class="moods" id="moods">
+            <button class="mood-btn" data-mood="😊" title="Good">😊</button>
+            <button class="mood-btn" data-mood="😐" title="Neutral">😐</button>
+            <button class="mood-btn" data-mood="😔" title="Low">😔</button>
+            <button class="mood-btn" data-mood="😤" title="Frustrated">😤</button>
+            <button class="mood-btn" data-mood="✨" title="Grateful">✨</button>
+          </div>
+          <button class="btn-sm wine" id="saveBtn">Seal this page</button>
+        </div>
+        <button class="link-btn" id="editPageBtn" style="display:none; margin-top:10px;">Edit this page</button>
+        <div class="save-status" id="saveStatus"></div>
+
+        <div class="daily-meta-row" id="dailyMetaRow">
+          <button class="link-btn" id="buyPageBtn">+ Buy an extra page (5 coins)</button>
+          <button class="link-btn" id="aspiraBtn" style="display:none;">✨ Reflect with Aspira</button>
+          <button class="link-btn danger" id="deleteBtn">Delete this page</button>
+        </div>
+        <div class="confirm-inline" id="deleteConfirm1" style="display:none;">
+          Delete this page? It'll move to Deleted Items and cost coins to bring back.
+          <div class="row">
+            <button class="btn-sm wine" id="deleteConfirmYes1">Yes, delete</button>
+            <button class="btn-sm outline" id="deleteConfirmNo1">Cancel</button>
+          </div>
+        </div>
+        <div class="confirm-inline" id="deleteConfirm2" style="display:none;">
+          Last check — this sends the page to Deleted Items. Restoring later costs 5 MindCoins.
+          <div class="row">
+            <button class="btn-sm wine" id="deleteConfirmYes2">Delete for good</button>
+            <button class="btn-sm outline" id="deleteConfirmNo2">Keep it</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- WALLET -->
+      <section class="inner-view" id="inner-wallet">
+        <p class="eyebrow">Your economy</p>
+        <h1 class="section-heading">Wallet</h1>
+        <div class="wallet-balance">
+          <div class="coins" id="walletCoins">0</div>
+          <div class="coins-label">MindCoins</div>
+        </div>
+        <p class="dash-recent-title">Transactions</p>
+        <div id="txList"></div>
+      </section>
+
+      <!-- DELETED -->
+      <section class="inner-view" id="inner-deleted">
+        <p class="eyebrow">Second chances</p>
+        <h1 class="section-heading">Deleted Items</h1>
+        <div id="deletedList"></div>
+      </section>
+
+      <!-- SETTINGS -->
+      <section class="inner-view" id="inner-settings">
+        <p class="eyebrow">Your account</p>
+        <h1 class="section-heading">Settings</h1>
+
+        <div class="settings-group">
+          <div class="settings-group-title">Appearance</div>
+          <div class="settings-row">
+            <div>
+              <div class="settings-row-label">Accent theme</div>
+              <div class="settings-row-desc">Changes the page's accent color</div>
+            </div>
+            <div class="theme-swatches" id="themeSwatches">
+              <div class="swatch" data-theme="wine" style="background:#7A2A38;"></div>
+              <div class="swatch" data-theme="sage" style="background:#7C8F6E;"></div>
+              <div class="swatch" data-theme="gold" style="background:#B9903F;"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="settings-group">
+          <div class="settings-group-title">Your data</div>
+          <div class="settings-row">
+            <div>
+              <div class="settings-row-label">Export your diary</div>
+              <div class="settings-row-desc">Download every page as a JSON file</div>
+            </div>
+            <button class="btn-sm outline" id="exportBtn">Export</button>
+          </div>
+        </div>
+
+        <div class="settings-group">
+          <div class="settings-group-title">Danger zone</div>
+          <div class="settings-row" style="border-bottom:none;">
+            <div>
+              <div class="settings-row-label">Delete account</div>
+              <div class="settings-row-desc">Erases your profile and every page. Cannot be undone.</div>
+            </div>
+            <button class="btn-sm wine" id="deleteAccountBtn">Delete account</button>
+          </div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+</section>
+
+<!-- ============ MODALS ============ -->
+<!-- ============ ASPIRA RESULT MODAL ============ -->
+<div class="overlay" id="aspiraResultOverlay">
+  <div class="overlay-card">
+    <h2>Aspira's Reflection</h2>
+    <p class="aspira-mood">Mood: <strong id="aspiraMood"></strong></p>
+    <p id="aspiraSummary"></p>
+    <p class="aspira-prompt-label">A prompt to sit with:</p>
+    <p id="aspiraPrompt" class="aspira-prompt-text"></p>
+    <div class="overlay-actions-row">
+      <button class="btn-sm outline" id="aspiraCopyBtn">Copy prompt</button>
+      <button class="btn-sm wine" id="aspiraCloseBtn">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============ GENERIC CONFIRM MODAL (reused for row-delete, buy-page, delete-account step 1) ============ -->
+<div class="overlay" id="confirmOverlay">
+  <div class="overlay-card">
+    <h2 id="confirmTitle">Are you sure?</h2>
+    <p id="confirmMessage"></p>
+    <div class="overlay-actions-row">
+      <button class="btn-sm outline" id="confirmCancelBtn">Cancel</button>
+      <button class="btn-sm wine" id="confirmOkBtn">Continue</button>
+    </div>
+  </div>
+</div>
+
+<div class="overlay" id="deleteAccountOverlay">
+  <div class="overlay-card">
+    <h2>Delete your account?</h2>
+    <p>This permanently erases your profile, every page, and your MindCoins. Type your password to confirm.</p>
+    <div class="field" style="text-align:left;">
+      <input type="password" id="deleteAccountPassword" placeholder="Your password">
+    </div>
+    <div class="field-error" id="deleteAccountError"></div>
+    <div class="overlay-actions-row">
+      <button class="btn-sm outline" id="deleteAccountCancel">Cancel</button>
+      <button class="btn-sm wine" id="deleteAccountConfirm">Delete everything</button>
+    </div>
+  </div>
+</div>
+
+<script>
+(function() {
+  /* ============================================================
+     This version talks to the real Daybook backend instead of
+     local storage. All data lives in your MongoDB Atlas database
+     via the API hosted on Render.
+  ============================================================ */
+  const API_BASE = 'https://daybook-backend-gdd3.onrender.com';
+
+  const RESTORE_COST = 5;
+  const EXTRA_PAGE_COST = 5;
+  const PAGE_CHAR_LIMIT = 2000;
+
+  let profile = null;       // { email, mindcoins, streak, longest_streak, created_at }
+  let authToken = null;     // JWT, kept in memory only — cleared on logout/refresh
+  let entries = {};         // dateKey -> { id, pages, allowed_pages, deleted }
+  let transactions = [];    // array from GET /transactions
+
+  let currentDailyKey = null;
+  let currentPageIndex = 0;
+  let selectedMood = null;
+  let calViewDate = new Date();
+  let currentTheme = 'wine';
+  let forceEditMode = false;
+
+  const pad2 = n => String(n).padStart(2, '0');
+  const keyOf = d => d.getFullYear() + '-' + pad2(d.getMonth()+1) + '-' + pad2(d.getDate());
+  const dateFromKey = k => { const [y,m,d] = k.split('-').map(Number); return new Date(y, m-1, d); };
+  const todayKey = () => keyOf(new Date());
+  const formatShort = k => dateFromKey(k).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' });
+  const formatLong = k => dateFromKey(k).toLocaleDateString(undefined, { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
+  const formatWeekday = k => dateFromKey(k).toLocaleDateString(undefined, { weekday: 'short' });
+  const escapeHtml = str => { const d = document.createElement('div'); d.textContent = str; return d.innerHTML; };
+
+  /* ============================================================
+     GENERIC CONFIRM MODAL
+  ============================================================ */
+  function askConfirm(title, message, okLabel) {
+    return new Promise(resolve => {
+      document.getElementById('confirmTitle').textContent = title;
+      document.getElementById('confirmMessage').textContent = message;
+      const okBtn = document.getElementById('confirmOkBtn');
+      const cancelBtn = document.getElementById('confirmCancelBtn');
+      okBtn.textContent = okLabel || 'Continue';
+      const overlay = document.getElementById('confirmOverlay');
+      overlay.classList.add('active');
+      function cleanup(result) {
+        overlay.classList.remove('active');
+        okBtn.removeEventListener('click', onOk);
+        cancelBtn.removeEventListener('click', onCancel);
+        resolve(result);
+      }
+      function onOk() { cleanup(true); }
+      function onCancel() { cleanup(false); }
+      okBtn.addEventListener('click', onOk);
+      cancelBtn.addEventListener('click', onCancel);
+    });
+  }
+
+  /* ============================================================
+     API HELPER
+  ============================================================ */
+  async function api(path, { method = 'GET', body = null, form = null, auth = true } = {}) {
+    const headers = {};
+    if (auth && authToken) headers['Authorization'] = 'Bearer ' + authToken;
+    let fetchBody = undefined;
+    if (form) {
+      fetchBody = new URLSearchParams(form);
+    } else if (body) {
+      headers['Content-Type'] = 'application/json';
+      fetchBody = JSON.stringify(body);
+    }
+    let res;
+    try {
+      res = await fetch(API_BASE + path, { method, headers, body: fetchBody });
+    } catch (e) {
+      throw { networkError: true, message: 'Could not reach the server. It may be waking up from sleep — try again in a moment.' };
+    }
+    let data = null;
+    try { data = await res.json(); } catch (e) { /* no body */ }
+    if (!res.ok) {
+      const detail = data && data.detail;
+      const message = Array.isArray(detail) ? (detail[0] && detail[0].msg) : (detail || ('Request failed (' + res.status + ')'));
+      throw { status: res.status, message };
+    }
+    return data;
+  }
+
+  /* ============================================================
+     SCREEN / VIEW ROUTING
+  ============================================================ */
+  function showScreen(name) {
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    document.getElementById('screen-' + name).classList.add('active');
+  }
+  function showInner(name) {
+    document.querySelectorAll('.tab[data-inner]').forEach(t => t.classList.toggle('active', t.dataset.inner === name));
+    document.querySelectorAll('.inner-view').forEach(v => v.classList.remove('active'));
+    document.getElementById('inner-' + name).classList.add('active');
+    if (name === 'dashboard') renderDashboard();
+    if (name === 'calendar') { renderCalendar(); renderEntriesList(); }
+    if (name === 'wallet') refreshWallet();
+    if (name === 'deleted') renderDeletedList();
+  }
+
+  document.getElementById('landingSignup').addEventListener('click', () => showScreen('register'));
+  document.getElementById('landingLogin').addEventListener('click', () => showScreen('login'));
+  document.getElementById('landingPrivacyLink').addEventListener('click', e => { e.preventDefault(); alert('Your pages are stored under your account only in a real database, and are never shared.'); });
+  document.getElementById('regToLogin').addEventListener('click', () => showScreen('login'));
+  document.getElementById('loginToRegister').addEventListener('click', () => showScreen('register'));
+
+  document.querySelectorAll('.tab[data-inner]').forEach(tab => {
+    tab.addEventListener('click', () => showInner(tab.dataset.inner));
+  });
+
+  /* ============================================================
+     AUTH: REGISTER / LOGIN / LOGOUT
+  ============================================================ */
+  document.getElementById('regSubmit').addEventListener('click', async () => {
+    const email = document.getElementById('regEmail').value.trim().toLowerCase();
+    const pw = document.getElementById('regPassword').value;
+    const pw2 = document.getElementById('regPassword2').value;
+    const err = document.getElementById('regError');
+    err.textContent = '';
+
+    if (!/^\S+@\S+\.\S+$/.test(email)) { err.textContent = 'Enter a valid email.'; return; }
+    if (pw.length < 6) { err.textContent = 'Password must be at least 6 characters.'; return; }
+    if (pw !== pw2) { err.textContent = 'Passwords don\'t match.'; return; }
+
+    const btn = document.getElementById('regSubmit');
+    const waking = document.getElementById('regWaking');
+    btn.disabled = true; btn.textContent = 'Creating...';
+    waking.classList.add('active');
+    try {
+      await api('/auth/register', { method: 'POST', body: { email, password: pw }, auth: false });
+      alert('Welcome to Daybook! Your account is ready — log in to start writing.');
+      document.getElementById('loginEmail').value = email;
+      showScreen('login');
+    } catch (e) {
+      err.textContent = e.message || 'Could not create your account. Try again.';
+    } finally {
+      btn.disabled = false; btn.textContent = 'Create my diary';
+      waking.classList.remove('active');
+    }
+  });
+
+  document.getElementById('loginSubmit').addEventListener('click', async () => {
+    const email = document.getElementById('loginEmail').value.trim().toLowerCase();
+    const pw = document.getElementById('loginPassword').value;
+    const err = document.getElementById('loginError');
+    err.textContent = '';
+
+    const btn = document.getElementById('loginSubmit');
+    const waking = document.getElementById('loginWaking');
+    btn.disabled = true; btn.textContent = 'Logging in...';
+    waking.classList.add('active');
+    try {
+      const tokenRes = await api('/auth/token', { method: 'POST', form: { username: email, password: pw }, auth: false });
+      authToken = tokenRes.access_token;
+      profile = await api('/auth/me');
+      await loadEverything();
+      showScreen('app');
+      showInner('dashboard');
+    } catch (e) {
+      err.textContent = e.networkError ? e.message : 'Email or password is incorrect.';
+      const card = document.getElementById('screen-login').querySelector('.auth-card');
+      card.classList.add('shake');
+      setTimeout(() => card.classList.remove('shake'), 350);
+    } finally {
+      btn.disabled = false; btn.textContent = 'Log in';
+      waking.classList.remove('active');
+    }
+  });
+
+  document.getElementById('logoutBtn').addEventListener('click', () => {
+    authToken = null;
+    profile = null;
+    entries = {};
+    transactions = [];
+    document.getElementById('loginEmail').value = '';
+    document.getElementById('loginPassword').value = '';
+    showScreen('login');
+  });
+
+  /* ============================================================
+     LOAD DATA
+  ============================================================ */
+  async function loadEverything() {
+    entries = {};
+    try {
+      const list = await api('/diary/entries?include_deleted=true');
+      for (const e of list) {
+        entries[e.date] = { id: e.id, pages: e.pages, allowed_pages: e.allowed_pages, deleted: e.deleted };
+      }
+    } catch (e) { console.error('load entries failed', e); }
+
+    try {
+      transactions = await api('/transactions?limit=100');
+    } catch (e) { console.error('load tx failed', e); }
+  }
+
+  async function refreshProfile() {
+    try { profile = await api('/auth/me'); } catch (e) { console.error('refresh profile failed', e); }
+  }
+
+  /* ============================================================
+     DASHBOARD
+  ============================================================ */
+  function renderDashboard() {
+    document.getElementById('dashGreetingEyebrow').textContent = new Date().toLocaleDateString(undefined, { weekday: 'long', month: 'long', day: 'numeric' });
+    document.getElementById('dashGreeting').textContent = 'Welcome back' + (profile && profile.email ? ', ' + profile.email.split('@')[0] : '');
+    document.getElementById('dashCoins').textContent = profile ? profile.mindcoins : 0;
+    document.getElementById('dashStreak').textContent = profile ? profile.streak : 0;
+    const activeCount = Object.keys(entries).filter(k => !entries[k].deleted).length;
+    document.getElementById('dashTotal').textContent = activeCount;
+
+    const recent = Object.keys(entries).filter(k => !entries[k].deleted).sort().reverse().slice(0, 4);
+    const recentEl = document.getElementById('dashRecent');
+    if (!recent.length) {
+      recentEl.innerHTML = '<div class="empty-state">Nothing written yet. Today is blank until you fill it.</div>';
+    } else {
+      recentEl.innerHTML = recent.map(k => rowHtml(k)).join('');
+      wireEntryRows(recentEl);
+    }
+  }
+
+  document.getElementById('writeTodayBtn').addEventListener('click', () => openDaily(todayKey()));
+  document.getElementById('goCalendarBtn').addEventListener('click', () => showInner('calendar'));
+
+  function rowHtml(k) {
+    const e = entries[k];
+    const firstPage = e.pages && e.pages[0] ? e.pages[0] : { text: '', mood: null };
+    const firstLine = (firstPage.text.split('\n').find(l => l.trim().length) || '').trim();
+    return `<div class="entry-row" data-key="${k}">
+      <div class="entry-row-date"><span class="weekday">${formatWeekday(k)}</span>${dateFromKey(k).toLocaleDateString(undefined,{month:'short',day:'numeric'})}</div>
+      <div class="entry-row-glimpse">
+        <span class="entry-row-mood">${firstPage.mood || ''}</span>
+        <span>${escapeHtml(firstLine) || '<span style="color:var(--text-faint);font-style:italic;">(no text)</span>'}</span>
+      </div>
+      <button class="row-delete-btn" data-key="${k}" title="Delete this page" aria-label="Delete this page">🗑</button>
+    </div>`;
+  }
+  function wireEntryRows(container) {
+    container.querySelectorAll('.entry-row').forEach(row => {
+      row.addEventListener('click', () => openDaily(row.dataset.key));
+    });
+    container.querySelectorAll('.row-delete-btn').forEach(btn => {
+      btn.addEventListener('click', async (e) => {
+        e.stopPropagation();
+        const k = btn.dataset.key;
+        const entry = entries[k];
+        if (!entry || !entry.id) return;
+        const ok = await askConfirm('Delete this page?', 'It moves to Deleted Items — you can restore it later for ' + RESTORE_COST + ' MindCoins.', 'Delete page');
+        if (!ok) return;
+        try {
+          await api('/diary/entry/' + entry.id, { method: 'DELETE' });
+          entries[k].deleted = true;
+          renderDashboard();
+          renderCalendar();
+          renderEntriesList();
+        } catch (err) {
+          alert(err.message || 'Could not delete this page.');
+        }
+      });
+    });
+  }
+
+  /* ============================================================
+     CALENDAR
+  ============================================================ */
+  document.getElementById('calPrev').addEventListener('click', () => { calViewDate.setMonth(calViewDate.getMonth()-1); renderCalendar(); });
+  document.getElementById('calNext').addEventListener('click', () => { calViewDate.setMonth(calViewDate.getMonth()+1); renderCalendar(); });
+
+  function renderCalendar() {
+    const y = calViewDate.getFullYear(), m = calViewDate.getMonth();
+    document.getElementById('calMonthLabel').textContent = calViewDate.toLocaleDateString(undefined, { month: 'long', year: 'numeric' });
+    const grid = document.getElementById('calGrid');
+    grid.innerHTML = '';
+    ['S','M','T','W','T','F','S'].forEach(d => { const el = document.createElement('div'); el.className='cal-dow'; el.textContent=d; grid.appendChild(el); });
+
+    const firstDow = new Date(y, m, 1).getDay();
+    const daysInMonth = new Date(y, m+1, 0).getDate();
+    const tKey = todayKey();
+    const now = new Date(); now.setHours(0,0,0,0);
+
+    for (let i=0; i<firstDow; i++) { const el = document.createElement('div'); el.className='cal-cell empty'; grid.appendChild(el); }
+    for (let d=1; d<=daysInMonth; d++) {
+      const cellDate = new Date(y, m, d);
+      const k = keyOf(cellDate);
+      const cell = document.createElement('div');
+      const hasEntry = entries[k] && !entries[k].deleted;
+      const isFuture = cellDate > now;
+      cell.className = 'cal-cell' + (hasEntry ? ' written' : '') + (k===tKey ? ' today' : '') + (isFuture ? ' future' : '');
+      cell.textContent = d;
+      if (hasEntry) { const dot = document.createElement('div'); dot.className='dot'; cell.appendChild(dot); }
+      if (!isFuture) cell.addEventListener('click', () => openDaily(k));
+      grid.appendChild(cell);
+    }
+  }
+
+  const searchInput = document.getElementById('searchInput');
+  searchInput.addEventListener('input', renderEntriesList);
+  function renderEntriesList() {
+    const q = searchInput.value.trim().toLowerCase();
+    const keys = Object.keys(entries).filter(k => !entries[k].deleted).sort().reverse();
+    const filtered = keys.filter(k => {
+      if (!q) return true;
+      const text = (entries[k].pages || []).map(p => p.text).join(' ').toLowerCase();
+      return k.includes(q) || text.includes(q) || formatShort(k).toLowerCase().includes(q);
+    });
+    const el = document.getElementById('entriesList');
+    if (!filtered.length) { el.innerHTML = '<div class="empty-state">' + (keys.length ? 'No pages match that search.' : 'No pages yet.') + '</div>'; return; }
+    el.innerHTML = filtered.map(k => rowHtml(k)).join('');
+    wireEntryRows(el);
+  }
+
+  /* ============================================================
+     DAILY PAGE
+  ============================================================ */
+  document.getElementById('dailyBack').addEventListener('click', () => showInner('calendar'));
+
+  function openDaily(key) {
+    currentDailyKey = key;
+    currentPageIndex = 0;
+    forceEditMode = false;
+    document.querySelectorAll('.tab[data-inner]').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.inner-view').forEach(v => v.classList.remove('active'));
+    document.getElementById('inner-daily').classList.add('active');
+    renderDaily();
+  }
+
+  function currentEntry() {
+    return entries[currentDailyKey] || { id: null, pages: [], allowed_pages: 1, deleted: false };
+  }
+
+  function renderDaily() {
+    const k = currentDailyKey;
+    document.getElementById('dailyEyebrow').textContent = formatWeekday(k) + (k === todayKey() ? ' · Today' : '');
+    document.getElementById('dailyHeading').textContent = formatLong(k);
+
+    const entry = currentEntry();
+    const allowed = entry.allowed_pages || 1;
+    const pageCount = Math.max(entry.pages.length, 1);
+    const isFuture = dateFromKey(k) > new Date(new Date().setHours(0,0,0,0));
+
+    const tabsEl = document.getElementById('dailyPageTabs');
+    tabsEl.innerHTML = '';
+    for (let i=0; i<Math.max(entry.pages.length,1); i++) {
+      const btn = document.createElement('button');
+      btn.className = 'page-tab' + (i===currentPageIndex ? ' active' : '');
+      btn.textContent = 'Page ' + (i+1);
+      btn.addEventListener('click', () => { currentPageIndex = i; renderDaily(); });
+      tabsEl.appendChild(btn);
+    }
+    tabsEl.style.display = (entry.pages.length > 1) ? 'flex' : 'none';
+
+    const page = entry.pages[currentPageIndex] || { text: '', mood: null };
+    const entryText = document.getElementById('entryText');
+    entryText.value = page.text || '';
+    updateCharCounter();
+    selectedMood = page.mood || null;
+    document.querySelectorAll('.mood-btn').forEach(b => b.classList.toggle('selected', b.dataset.mood === selectedMood));
+
+    const hasSavedText = !!(page.text && page.text.trim().length);
+    const canEditAtAll = !isFuture && !entry.deleted;
+    const isSealed = canEditAtAll && hasSavedText && !forceEditMode;
+    const canType = canEditAtAll && !isSealed;
+
+    entryText.disabled = !canType;
+
+    const saveBtn = document.getElementById('saveBtn');
+    const editBtn = document.getElementById('editPageBtn');
+    const status = document.getElementById('saveStatus');
+
+    if (entry.deleted) {
+      status.textContent = 'This page is in Deleted Items.';
+    } else if (isFuture) {
+      status.textContent = 'You can\'t write on a future date yet.';
+    } else {
+      status.textContent = '';
+    }
+
+    if (isSealed) {
+      saveBtn.style.display = 'inline-block';
+      saveBtn.disabled = true;
+      saveBtn.textContent = 'Sealed ✓';
+      saveBtn.classList.add('sealed');
+      editBtn.style.display = 'inline-block';
+    } else {
+      saveBtn.style.display = canEditAtAll ? 'inline-block' : 'none';
+      saveBtn.disabled = false;
+      saveBtn.textContent = 'Seal this page';
+      saveBtn.classList.remove('sealed');
+      editBtn.style.display = 'none';
+    }
+
+    document.getElementById('moods').style.pointerEvents = canType ? 'auto' : 'none';
+    document.getElementById('moods').style.opacity = canType ? '1' : '0.5';
+
+    const metaRow = document.getElementById('dailyMetaRow');
+    metaRow.style.display = (!entry.deleted && !isFuture) ? 'flex' : 'none';
+    const buyBtn = document.getElementById('buyPageBtn');
+    buyBtn.style.display = (pageCount >= allowed) ? 'inline-block' : 'none';
+    document.getElementById('deleteBtn').style.display = (entry.pages.length && entry.pages[0].text && entry.id) ? 'inline-block' : 'none';
+    document.getElementById('aspiraBtn').style.display = (hasSavedText && entry.id) ? 'inline-block' : 'none';
+
+    document.getElementById('deleteConfirm1').style.display = 'none';
+    document.getElementById('deleteConfirm2').style.display = 'none';
+  }
+
+  document.getElementById('editPageBtn').addEventListener('click', () => {
+    forceEditMode = true;
+    renderDaily();
+  });
+
+  function updateCharCounter() {
+    const len = document.getElementById('entryText').value.length;
+    const counter = document.getElementById('charCounter');
+    counter.textContent = len + ' / ' + PAGE_CHAR_LIMIT + ' characters';
+    counter.classList.toggle('near-limit', len >= PAGE_CHAR_LIMIT * 0.85 && len < PAGE_CHAR_LIMIT);
+    counter.classList.toggle('at-limit', len >= PAGE_CHAR_LIMIT);
+    document.getElementById('limitHint').style.display = (len >= PAGE_CHAR_LIMIT) ? 'block' : 'none';
+  }
+  document.getElementById('entryText').addEventListener('input', updateCharCounter);
+
+  document.querySelectorAll('#moods .mood-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      if (selectedMood === btn.dataset.mood) { selectedMood = null; }
+      else { selectedMood = btn.dataset.mood; }
+      document.querySelectorAll('.mood-btn').forEach(b => b.classList.toggle('selected', b.dataset.mood === selectedMood));
+    });
+  });
+
+  document.getElementById('saveBtn').addEventListener('click', async () => {
+    const text = document.getElementById('entryText').value.trim();
+    const status = document.getElementById('saveStatus');
+    if (!text) { status.textContent = 'Write something before sealing the page.'; return; }
+
+    const k = currentDailyKey;
+    const btn = document.getElementById('saveBtn');
+    const originalLabel = btn.textContent;
+    btn.disabled = true; btn.textContent = 'Sealing...';
+    let succeeded = false;
+    try {
+      const updated = await api('/diary/entry', {
+        method: 'POST',
+        body: { date: k, text, mood: selectedMood, page_index: currentPageIndex },
+      });
+      entries[k] = { id: updated.id, pages: updated.pages, allowed_pages: updated.allowed_pages, deleted: updated.deleted };
+      await refreshProfile();
+      status.textContent = 'Sealed — saved just now.';
+      forceEditMode = false;
+      succeeded = true;
+      renderDaily();
+      renderDashboard();
+      renderCalendar();
+    } catch (e) {
+      status.textContent = e.message || 'Could not save. Try again.';
+    } finally {
+      if (!succeeded) { btn.disabled = false; btn.textContent = originalLabel; }
+    }
+  });
+
+  document.getElementById('buyPageBtn').addEventListener('click', async () => {
+    if (!profile || profile.mindcoins < EXTRA_PAGE_COST) { alert('Not enough MindCoins. You need ' + EXTRA_PAGE_COST + ' to buy another page.'); return; }
+    const ok = await askConfirm('Buy an extra page?', 'This costs ' + EXTRA_PAGE_COST + ' MindCoins from your wallet.', 'Buy for ' + EXTRA_PAGE_COST + ' coins');
+    if (!ok) return;
+    const btn = document.getElementById('buyPageBtn');
+    btn.disabled = true;
+    try {
+      const updated = await api('/payments/buy_extra_page/' + currentDailyKey, { method: 'POST' });
+      entries[currentDailyKey] = { id: updated.id, pages: updated.pages, allowed_pages: updated.allowed_pages, deleted: updated.deleted };
+      await refreshProfile();
+      currentPageIndex = updated.pages.length - 1;
+      forceEditMode = true;
+      renderDaily();
+    } catch (e) {
+      alert(e.message || 'Could not buy an extra page.');
+    } finally {
+      btn.disabled = false;
+    }
+  });
+
+  document.getElementById('aspiraBtn').addEventListener('click', async () => {
+    const entry = currentEntry();
+    if (!entry.id) return;
+    const ok = await askConfirm(
+      'Let Aspira reflect on this page?',
+      'Aspira will read this page once to generate a mood read and a reflective prompt. Your entry text is not stored anywhere by this feature.',
+      'Allow'
+    );
+    if (!ok) return;
+    const btn = document.getElementById('aspiraBtn');
+    btn.disabled = true; btn.textContent = 'Reflecting...';
+    try {
+      const result = await api('/panda/analyze', { method: 'POST', body: { entry_id: entry.id } });
+      document.getElementById('aspiraMood').textContent = result.mood;
+      document.getElementById('aspiraSummary').textContent = result.summary;
+      document.getElementById('aspiraPrompt').textContent = result.prompt;
+      document.getElementById('aspiraResultOverlay').classList.add('active');
+    } catch (e) {
+      alert(e.message || 'Aspira could not reflect on this page right now.');
+    } finally {
+      btn.disabled = false; btn.textContent = '✨ Reflect with Aspira';
+    }
+  });
+
+  document.getElementById('aspiraCloseBtn').addEventListener('click', () => {
+    document.getElementById('aspiraResultOverlay').classList.remove('active');
+  });
+  document.getElementById('aspiraCopyBtn').addEventListener('click', async () => {
+    const text = document.getElementById('aspiraPrompt').textContent;
+    try {
+      await navigator.clipboard.writeText(text);
+      const btn = document.getElementById('aspiraCopyBtn');
+      const original = btn.textContent;
+      btn.textContent = 'Copied!';
+      setTimeout(() => { btn.textContent = original; }, 1500);
+    } catch (e) { /* clipboard not available, silently ignore */ }
+  });
+
+  document.getElementById('deleteBtn').addEventListener('click', () => { document.getElementById('deleteConfirm1').style.display = 'block'; });
+  document.getElementById('deleteConfirmNo1').addEventListener('click', () => { document.getElementById('deleteConfirm1').style.display = 'none'; });
+  document.getElementById('deleteConfirmYes1').addEventListener('click', () => {
+    document.getElementById('deleteConfirm1').style.display = 'none';
+    document.getElementById('deleteConfirm2').style.display = 'block';
+  });
+  document.getElementById('deleteConfirmNo2').addEventListener('click', () => { document.getElementById('deleteConfirm2').style.display = 'none'; });
+  document.getElementById('deleteConfirmYes2').addEventListener('click', async () => {
+    const entry = currentEntry();
+    if (!entry.id) return;
+    try {
+      await api('/diary/entry/' + entry.id, { method: 'DELETE' });
+      entries[currentDailyKey].deleted = true;
+      document.getElementById('deleteConfirm2').style.display = 'none';
+      showInner('calendar');
+    } catch (e) {
+      alert(e.message || 'Could not delete this page.');
+    }
+  });
+
+  /* ============================================================
+     WALLET
+  ============================================================ */
+  async function refreshWallet() {
+    await refreshProfile();
+    try { transactions = await api('/transactions?limit=100'); } catch (e) { console.error(e); }
+    renderWallet();
+  }
+
+  function renderWallet() {
+    document.getElementById('walletCoins').textContent = profile ? profile.mindcoins : 0;
+    const el = document.getElementById('txList');
+    if (!transactions.length) { el.innerHTML = '<div class="empty-state">No transactions yet.</div>'; return; }
+    el.innerHTML = transactions.map(tx => {
+      const positive = tx.amount > 0;
+      return `<div class="tx-row">
+        <div>
+          <div>${escapeHtml(tx.meta || tx.type)}</div>
+          <div class="tx-meta">${new Date(tx.created_at).toLocaleDateString(undefined,{month:'short',day:'numeric',year:'numeric'})}</div>
+        </div>
+        <div class="tx-amt ${positive ? 'earn' : 'spend'}">${positive ? '+' : ''}${tx.amount}</div>
+      </div>`;
+    }).join('');
+  }
+
+  /* ============================================================
+     DELETED ITEMS
+  ============================================================ */
+  function renderDeletedList() {
+    const keys = Object.keys(entries).filter(k => entries[k].deleted).sort().reverse();
+    const el = document.getElementById('deletedList');
+    if (!keys.length) { el.innerHTML = '<div class="empty-state">Nothing here. Deleted pages will wait for you.</div>'; return; }
+    el.innerHTML = keys.map(k => {
+      const e = entries[k];
+      const firstPage = e.pages && e.pages[0] ? e.pages[0] : { text: '' };
+      const firstLine = (firstPage.text.split('\n').find(l => l.trim().length) || '').trim();
+      return `<div class="entry-row deleted-row">
+        <div class="entry-row-date"><span class="weekday">${formatWeekday(k)}</span>${dateFromKey(k).toLocaleDateString(undefined,{month:'short',day:'numeric'})}</div>
+        <div class="entry-row-glimpse"><span>${escapeHtml(firstLine) || '(no text)'}</span></div>
+        <button class="btn-sm sage entry-row-restore" data-key="${k}">Restore (${RESTORE_COST})</button>
+      </div>`;
+    }).join('');
+    el.querySelectorAll('.entry-row-restore').forEach(btn => {
+      btn.addEventListener('click', async (e) => {
+        e.stopPropagation();
+        const k = btn.dataset.key;
+        const entry = entries[k];
+        if (!profile || profile.mindcoins < RESTORE_COST) { alert('Not enough MindCoins to restore this page. You need ' + RESTORE_COST + '.'); return; }
+        try {
+          const updated = await api('/diary/entry/' + entry.id + '/restore', { method: 'POST' });
+          entries[k] = { id: updated.id, pages: updated.pages, allowed_pages: updated.allowed_pages, deleted: updated.deleted };
+          await refreshProfile();
+          renderDeletedList();
+        } catch (err) {
+          alert(err.message || 'Could not restore this page.');
+        }
+      });
+    });
+  }
+
+  /* ============================================================
+     SETTINGS
+  ============================================================ */
+  function applyTheme(theme) {
+    currentTheme = theme;
+    const map = { wine: '#7A2A38', sage: '#7C8F6E', gold: '#B9903F' };
+    document.documentElement.style.setProperty('--wine', map[theme] || map.wine);
+    document.querySelectorAll('.swatch').forEach(s => s.classList.toggle('selected', s.dataset.theme === theme));
+  }
+  document.querySelectorAll('.swatch').forEach(sw => {
+    sw.addEventListener('click', () => applyTheme(sw.dataset.theme));
+  });
+
+  document.getElementById('exportBtn').addEventListener('click', () => {
+    const data = { profile, entries };
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = 'daybook-export-' + todayKey() + '.json';
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  });
+
+  document.getElementById('deleteAccountBtn').addEventListener('click', async () => {
+    const ok = await askConfirm(
+      'Delete your account?',
+      'This permanently erases your profile, every page you\'ve written, and your MindCoins. This cannot be undone.',
+      'Yes, continue'
+    );
+    if (!ok) return;
+    document.getElementById('deleteAccountPassword').value = '';
+    document.getElementById('deleteAccountError').textContent = '';
+    document.getElementById('deleteAccountOverlay').classList.add('active');
+  });
+  document.getElementById('deleteAccountCancel').addEventListener('click', () => document.getElementById('deleteAccountOverlay').classList.remove('active'));
+  document.getElementById('deleteAccountConfirm').addEventListener('click', async () => {
+    const pw = document.getElementById('deleteAccountPassword').value;
+    const err = document.getElementById('deleteAccountError');
+    err.textContent = '';
+    try {
+      // re-verify password by attempting a fresh login
+      await api('/auth/token', { method: 'POST', form: { username: profile.email, password: pw }, auth: false });
+      await api('/auth/me', { method: 'DELETE' });
+    } catch (e) {
+      err.textContent = e.message === 'Incorrect email or password' ? 'Password is incorrect.' : (e.message || 'Could not delete account.');
+      return;
+    }
+    document.getElementById('deleteAccountOverlay').classList.remove('active');
+    authToken = null; profile = null; entries = {}; transactions = [];
+    showScreen('landing');
+  });
+
+})();
+</script>
+
+</body>
+</html>
