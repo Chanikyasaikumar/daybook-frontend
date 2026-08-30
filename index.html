@@ -1,1204 +1,1302 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Daybook — an online diary</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Lora:ital,wght@0,400;0,500;1,400&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Chanikya Sai Kumar — Portfolio</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&family=Manrope:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"/>
 <style>
-  :root {
-    --ink-navy: #171F29;
-    --ink-navy-deep: #10161E;
-    --parchment: #F3EBDC;
-    --parchment-line: #E4D7BE;
-    --wine: #7A2A38;
-    --wine-deep: #5C1F2A;
-    --sage: #7C8F6E;
-    --gold: #B9903F;
-    --text-brown: #4A3B2C;
-    --text-faint: #8A7A63;
-  }
-  * { box-sizing: border-box; }
-  body {
-    margin: 0;
-    background: var(--ink-navy);
-    background-image:
-      radial-gradient(ellipse at top left, rgba(185,144,63,0.06), transparent 55%),
-      radial-gradient(ellipse at bottom right, rgba(122,42,56,0.10), transparent 55%);
-    color: var(--text-brown);
-    font-family: 'Lora', serif;
-    min-height: 100vh;
-  }
-  button { font-family: inherit; }
+:root {
+  --cream: #F5F2ED;
+  --cream2: #EDE9E2;
+  --white: #FDFCFA;
+  --ink: #1A1814;
+  --ink2: #3D3A35;
+  --gray: #8A8780;
+  --line: #DDD9D2;
+  --green: #2D5016;
+  --green-lt: #EEF3E8;
+  --gold: #B8860B;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  background: var(--cream);
+  color: var(--ink);
+  font-family: 'Manrope', sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+::-webkit-scrollbar { width: 3px; }
+::-webkit-scrollbar-thumb { background: var(--green); }
 
-  /* ================= SCREENS (outer level: landing / register / login / app) ================= */
-  .screen { display: none; min-height: 100vh; }
-  .screen.active { display: block; }
+/* NAV */
+nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  background: rgba(245,242,237,0.96);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--line);
+  padding: 0 64px;
+  height: 68px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.nav-brand {
+  display: flex;
+  flex-direction: column;
+  line-height: 1;
+}
+.nav-brand-name {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--ink);
+  letter-spacing: 0.02em;
+}
+.nav-brand-sub {
+  font-size: 10px;
+  font-family: 'DM Mono', monospace;
+  color: var(--gray);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+.nav-center {
+  display: flex;
+  gap: 36px;
+}
+.nav-center a {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--gray);
+  text-decoration: none;
+  letter-spacing: 0.02em;
+  transition: color 0.2s;
+}
+.nav-center a:hover { color: var(--green); }
+.nav-right {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-family: 'DM Mono', monospace;
+  color: var(--green);
+  letter-spacing: 0.05em;
+}
+.nav-dot {
+  width: 7px; height: 7px;
+  border-radius: 50%;
+  background: var(--green);
+  animation: pulse 2s infinite;
+}
+@keyframes pulse {
+  0%,100% { opacity:1; }
+  50% { opacity:0.4; }
+}
 
-  /* ---- Landing ---- */
-  #screen-landing.active { display: flex; align-items: center; justify-content: center; padding: 40px 20px; }
-  .landing-wrap { max-width: 760px; text-align: center; }
-  .landing-eyebrow {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase;
-    color: var(--gold); margin-bottom: 14px;
-  }
-  .landing-title {
-    font-family: 'Fraunces', serif; font-weight: 600; font-size: clamp(34px, 6vw, 58px);
-    color: var(--parchment); line-height: 1.08; margin: 0 0 18px;
-  }
-  .landing-title em { color: var(--gold); font-style: normal; }
-  .landing-sub {
-    font-size: 16.5px; color: #C9BFA8; max-width: 520px; margin: 0 auto 34px; line-height: 1.6;
-  }
-  .landing-mock {
-    background: var(--parchment);
-    background-image: linear-gradient(var(--parchment-line) 1px, transparent 1px);
-    background-size: 100% 26px;
-    border-radius: 4px;
-    max-width: 420px;
-    margin: 0 auto 34px;
-    padding: 22px 26px;
-    box-shadow: 0 30px 70px rgba(0,0,0,0.4);
-    text-align: left;
-  }
-  .landing-mock .mock-date { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--wine-deep); letter-spacing: 0.06em; margin-bottom: 10px; }
-  .landing-mock .mock-line { height: 12px; background: rgba(74,59,44,0.14); border-radius: 2px; margin-bottom: 12px; }
-  .landing-mock .mock-line:nth-child(3) { width: 92%; }
-  .landing-mock .mock-line:nth-child(4) { width: 76%; }
-  .landing-mock .mock-line:nth-child(5) { width: 84%; }
-  .landing-actions { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; margin-bottom: 20px; }
-  .btn {
-    font-family: 'JetBrains Mono', monospace; font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase;
-    padding: 13px 26px; border-radius: 50px; cursor: pointer; border: none; transition: transform 0.15s, background 0.2s;
-  }
-  .btn:hover { transform: translateY(-1px); }
-  .btn-primary { background: var(--wine); color: var(--parchment); box-shadow: 0 4px 14px rgba(122,42,56,0.4); }
-  .btn-primary:hover { background: var(--wine-deep); }
-  .btn-ghost { background: transparent; color: var(--parchment); border: 1px solid rgba(243,235,220,0.35); }
-  .btn-ghost:hover { border-color: var(--gold); color: var(--gold); }
-  .landing-privacy { font-size: 12.5px; color: #8C8371; }
-  .landing-privacy a { color: var(--gold); text-decoration: none; }
+/* HERO */
+#hero {
+  padding-top: 68px;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+.hero-top {
+  flex: 1;
+  display: grid;
+  grid-template-columns: 1fr 380px;
+  border-bottom: 1px solid var(--line);
+}
+.hero-main {
+  padding: 80px 64px 60px;
+  border-right: 1px solid var(--line);
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+}
+.hero-label {
+  font-family: 'DM Mono', monospace;
+  font-size: 11px;
+  color: var(--green);
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  margin-bottom: 40px;
+}
+.hero-name {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(52px, 6vw, 96px);
+  font-weight: 600;
+  line-height: 0.9;
+  letter-spacing: -2px;
+  color: var(--ink);
+  margin-bottom: 36px;
+}
+.hero-name .line2 { font-style: italic; color: var(--green); }
+.hero-intro {
+  font-size: 16px;
+  color: var(--gray);
+  line-height: 1.75;
+  max-width: 520px;
+  font-weight: 300;
+  margin-bottom: 48px;
+}
+.hero-intro strong { color: var(--ink2); font-weight: 500; }
+.hero-actions { display: flex; gap: 14px; align-items: center; }
+.btn-a {
+  font-size: 13px; font-weight: 500;
+  padding: 12px 28px;
+  background: var(--green);
+  color: #fff;
+  border-radius: 100px;
+  text-decoration: none;
+  transition: all 0.2s;
+  letter-spacing: 0.02em;
+}
+.btn-a:hover { background: #1e3a0e; }
+.btn-b {
+  font-size: 13px; font-weight: 500;
+  padding: 12px 28px;
+  border: 1px solid var(--line);
+  color: var(--ink2);
+  border-radius: 100px;
+  text-decoration: none;
+  transition: all 0.2s;
+}
+.btn-b:hover { border-color: var(--green); color: var(--green); }
 
-  /* ---- Auth (register / login) ---- */
-  .screen.active.auth-screen { display: flex; align-items: center; justify-content: center; min-height: 100vh; padding: 20px; }
-  .auth-card {
-    background: var(--parchment); border-radius: 4px; width: 100%; max-width: 380px;
-    padding: 36px 32px; box-shadow: 0 30px 70px rgba(0,0,0,0.5); text-align: center;
-  }
-  .auth-card .eyebrow {
-    font-family: 'JetBrains Mono', monospace; font-size: 10.5px; letter-spacing: 0.14em; text-transform: uppercase;
-    color: var(--text-faint); margin: 0 0 6px;
-  }
-  .auth-card h1 { font-family: 'Fraunces', serif; font-weight: 500; font-size: 28px; color: var(--wine-deep); margin: 0 0 6px; }
-  .auth-sub { font-size: 13.5px; color: var(--text-faint); margin: 0 0 22px; font-style: italic; }
-  .field { text-align: left; margin-bottom: 14px; }
-  .field label {
-    display: block; font-family: 'JetBrains Mono', monospace; font-size: 10.5px; letter-spacing: 0.1em;
-    text-transform: uppercase; color: var(--text-faint); margin-bottom: 6px;
-  }
-  .field input {
-    width: 100%; background: #fff; border: 1px solid var(--parchment-line); border-radius: 3px;
-    padding: 10px 12px; font-family: 'Lora', serif; font-size: 15px; color: var(--text-brown); outline: none;
-  }
-  .field input:focus { border-color: var(--gold); }
-  .field-error { font-family: 'JetBrains Mono', monospace; font-size: 11.5px; color: var(--wine); min-height: 16px; margin-bottom: 8px; }
-  .auth-card .btn-primary { width: 100%; padding: 12px; margin-top: 6px; }
-  .auth-switch {
-    margin-top: 16px; font-family: 'JetBrains Mono', monospace; font-size: 10.5px; letter-spacing: 0.05em;
-    color: var(--text-faint); background: none; border: none; cursor: pointer; text-decoration: underline;
-  }
-  .shake { animation: shake 0.35s; }
-  @keyframes shake { 0%,100%{transform:translateX(0);} 25%{transform:translateX(-6px);} 75%{transform:translateX(6px);} }
+.hero-side {
+  padding: 80px 40px 60px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  gap: 32px;
+}
+.hero-side-stat {
+  padding-bottom: 28px;
+  border-bottom: 1px solid var(--line);
+}
+.hero-side-stat:last-child { border-bottom: none; padding-bottom: 0; }
+.hsn {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 52px;
+  font-weight: 700;
+  color: var(--ink);
+  line-height: 1;
+  letter-spacing: -2px;
+}
+.hsl { font-size: 13px; color: var(--gray); margin-top: 4px; }
+.hsd {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  color: var(--line);
+  margin-top: 2px;
+  letter-spacing: 0.05em;
+}
 
-  /* ================= APP SHELL (post-login) ================= */
-  #screen-app.active { display: flex; align-items: center; justify-content: center; padding: 32px 16px; }
-  .book { display: flex; width: 100%; max-width: 1000px; min-height: 660px; box-shadow: 0 30px 70px rgba(0,0,0,0.45); border-radius: 4px; overflow: hidden; }
+.hero-bottom {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  border-bottom: 1px solid var(--line);
+}
+.hero-role-pill {
+  padding: 18px 0;
+  text-align: center;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--gray);
+  letter-spacing: 0.05em;
+  border-right: 1px solid var(--line);
+  transition: all 0.2s;
+}
+.hero-role-pill:last-child { border-right: none; }
+.hero-role-pill:hover { background: var(--green-lt); color: var(--green); }
+.hero-role-pill.active { background: var(--green); color: #fff; }
 
-  .spine { width: 84px; background: var(--ink-navy-deep); display: flex; flex-direction: column; padding: 26px 0; flex-shrink: 0; }
-  .spine-title { writing-mode: vertical-rl; text-orientation: mixed; font-family: 'Fraunces', serif; font-size: 18px; letter-spacing: 0.06em; color: var(--parchment); padding: 0 0 20px 0; margin: 0 auto 10px auto; opacity: 0.9; }
-  .tab {
-    background: none; border: none; cursor: pointer; color: var(--text-faint); font-family: 'JetBrains Mono', monospace;
-    font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; writing-mode: vertical-rl; padding: 14px 0;
-    margin: 3px auto; border-left: 3px solid transparent; transition: color 0.2s, border-color 0.2s;
-  }
-  .tab[data-color="wine"].active { border-color: var(--wine); color: var(--wine); background: rgba(122,42,56,0.12); }
-  .tab[data-color="sage"].active { border-color: var(--sage); color: var(--sage); background: rgba(124,143,110,0.12); }
-  .tab[data-color="gold"].active { border-color: var(--gold); color: var(--gold); background: rgba(185,144,63,0.12); }
-  .tab[data-color="faint"].active { border-color: var(--text-faint); color: var(--parchment); background: rgba(255,255,255,0.06); }
-  .tab:hover { color: var(--parchment); }
-  .tab-logout { margin-top: auto !important; color: var(--wine); }
+/* SECTIONS */
+.wrap { max-width: 1240px; margin: 0 auto; padding: 0 64px; }
+.sec { padding: 96px 0; border-bottom: 1px solid var(--line); }
+.sh {
+  display: grid;
+  grid-template-columns: 160px 1fr;
+  gap: 48px;
+  margin-bottom: 64px;
+}
+.sh-num {
+  font-family: 'DM Mono', monospace;
+  font-size: 11px;
+  color: var(--green);
+  letter-spacing: 0.1em;
+  padding-top: 12px;
+}
+.sh-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(32px, 3.5vw, 52px);
+  font-weight: 600;
+  letter-spacing: -1.5px;
+  color: var(--ink);
+  line-height: 1;
+}
 
-  .page { flex: 1; background: var(--parchment); padding: 34px 42px 40px; position: relative; overflow-y: auto; max-height: 660px; }
-  .page::before { content: ""; position: absolute; top: 0; left: 0; right: 0; height: 6px; background: repeating-linear-gradient(90deg, transparent 0 10px, rgba(0,0,0,0.05) 10px 12px); }
+/* ABOUT */
+.about-layout {
+  display: grid;
+  grid-template-columns: 160px 1fr;
+  gap: 48px;
+}
+.about-spacer {}
+.about-content {
+  display: grid;
+  grid-template-columns: 1.5fr 1fr;
+  gap: 64px;
+}
+.about-text {
+  font-size: 16px;
+  color: var(--ink2);
+  line-height: 1.8;
+  font-weight: 300;
+}
+.about-text p { margin-bottom: 20px; }
+.about-text strong { color: var(--ink); font-weight: 500; }
+.about-details { display: flex; flex-direction: column; gap: 20px; }
+.detail-row {
+  padding-bottom: 18px;
+  border-bottom: 1px solid var(--line);
+}
+.detail-row:last-child { border-bottom: none; }
+.detail-label {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  color: var(--green);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  margin-bottom: 4px;
+}
+.detail-val { font-size: 13px; font-weight: 500; color: var(--ink2); }
 
-  .inner-view { display: none; }
-  .inner-view.active { display: block; animation: fade 0.3s ease; }
-  @keyframes fade { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
+/* EDUCATION */
+.edu-layout {
+  display: grid;
+  grid-template-columns: 160px 1fr;
+  gap: 48px;
+}
+.edu-card {
+  background: var(--white);
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  overflow: hidden;
+}
+.edu-card-top {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 24px;
+  padding: 32px 36px;
+  border-bottom: 1px solid var(--line);
+  align-items: start;
+}
+.edu-degree {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 26px;
+  font-weight: 600;
+  color: var(--ink);
+  letter-spacing: -0.5px;
+  margin-bottom: 6px;
+}
+.edu-institution {
+  font-size: 14px;
+  color: var(--gray);
+  font-weight: 400;
+}
+.edu-period-badge {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  color: var(--green);
+  background: var(--green-lt);
+  border: 1px solid rgba(45,80,22,0.15);
+  padding: 5px 14px;
+  border-radius: 100px;
+  letter-spacing: 0.08em;
+  white-space: nowrap;
+}
+.edu-card-bottom {
+  padding: 24px 36px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+}
+.edu-stat-block { }
+.edu-stat-label {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  color: var(--green);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+.edu-stat-val {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--ink2);
+}
+.edu-coursework {
+  padding: 20px 36px;
+  border-top: 1px solid var(--line);
+  background: var(--cream);
+}
+.edu-coursework-label {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  color: var(--green);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  margin-bottom: 10px;
+}
+.edu-course-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.edu-pill {
+  font-size: 12px;
+  padding: 3px 12px;
+  background: var(--white);
+  border: 1px solid var(--line);
+  color: var(--gray);
+  border-radius: 100px;
+}
 
-  .eyebrow { font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--text-faint); margin: 0 0 6px; }
-  h1.section-heading { font-family: 'Fraunces', serif; font-weight: 500; font-size: 30px; margin: 0 0 20px; color: var(--wine-deep); line-height: 1.15; }
+/* EXPERIENCE */
+.exp-layout {
+  display: grid;
+  grid-template-columns: 160px 1fr;
+  gap: 48px;
+}
+.exp-list { display: flex; flex-direction: column; }
+.exp-entry {
+  display: grid;
+  grid-template-columns: 220px 1fr;
+  gap: 40px;
+  padding: 36px 0;
+  border-bottom: 1px solid var(--line);
+  transition: background 0.15s;
+}
+.exp-entry:first-child { padding-top: 0; }
+.exp-entry:last-child { border-bottom: none; }
+.exp-entry:hover { background: rgba(45,80,22,0.02); }
+.ee-left {}
+.ee-period {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  color: var(--green);
+  letter-spacing: 0.08em;
+  margin-bottom: 6px;
+}
+.ee-co { font-size: 13px; color: var(--gray); }
+.ee-right {}
+.ee-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 24px;
+  font-weight: 600;
+  color: var(--ink);
+  margin-bottom: 14px;
+  letter-spacing: -0.5px;
+}
+.ee-bullets { list-style: none; display: flex; flex-direction: column; gap: 7px; margin-bottom: 16px; }
+.ee-bullets li {
+  font-size: 14px;
+  color: var(--gray);
+  padding-left: 14px;
+  position: relative;
+  line-height: 1.6;
+  font-weight: 300;
+}
+.ee-bullets li::before { content: '·'; position: absolute; left: 0; color: var(--green); font-size: 18px; line-height: 1.2; }
+.ee-tags { display: flex; flex-wrap: wrap; gap: 5px; }
+.ee-tag {
+  font-size: 11px;
+  font-family: 'DM Mono', monospace;
+  padding: 2px 10px;
+  background: var(--cream2);
+  color: var(--gray);
+  border-radius: 100px;
+  border: 1px solid var(--line);
+}
 
-  /* ---- Dashboard ---- */
-  .dash-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-bottom: 24px; }
-  .dash-box { background: rgba(255,255,255,0.5); border: 1px solid var(--parchment-line); border-radius: 3px; padding: 16px; text-align: center; }
-  .dash-num { font-family: 'Fraunces', serif; font-size: 30px; color: var(--wine-deep); font-weight: 500; }
-  .dash-label { font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-faint); margin-top: 4px; }
-  .dash-cta { display: flex; gap: 12px; margin-bottom: 28px; flex-wrap: wrap; }
-  .dash-recent-title { font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-faint); margin: 0 0 12px; }
+/* PROJECTS */
+.proj-layout {
+  display: grid;
+  grid-template-columns: 160px 1fr;
+  gap: 48px;
+}
+.proj-list { display: flex; flex-direction: column; gap: 16px; }
+.proj-item {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 32px;
+  align-items: start;
+  padding: 32px 36px;
+  background: var(--white);
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  transition: border-color 0.2s, box-shadow 0.2s, transform 0.2s;
+}
+.proj-item:hover {
+  border-color: var(--green);
+  box-shadow: 0 4px 24px rgba(45,80,22,0.08);
+  transform: translateY(-2px);
+}
+.pi-num {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  color: var(--green);
+  letter-spacing: 0.1em;
+  margin-bottom: 10px;
+}
+.pi-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 22px;
+  font-weight: 600;
+  color: var(--ink);
+  margin-bottom: 10px;
+  letter-spacing: -0.5px;
+}
+.pi-desc {
+  font-size: 14px;
+  color: var(--gray);
+  line-height: 1.65;
+  font-weight: 300;
+  margin-bottom: 16px;
+}
+.pi-stack { display: flex; flex-wrap: wrap; gap: 5px; }
+.pi-pill {
+  font-size: 11px;
+  font-family: 'DM Mono', monospace;
+  padding: 2px 10px;
+  background: var(--green-lt);
+  color: var(--green);
+  border-radius: 100px;
+  border: 1px solid rgba(45,80,22,0.15);
+}
+.pi-arrow {
+  font-size: 20px;
+  color: var(--line);
+  transition: color 0.2s, transform 0.2s;
+  margin-top: 4px;
+}
+.proj-item:hover .pi-arrow { color: var(--green); transform: translate(3px,-3px); }
+.proj-item.featured { background: var(--green); border-color: var(--green); }
+.proj-item.featured .pi-num { color: rgba(255,255,255,0.6); }
+.proj-item.featured .pi-title { color: #fff; }
+.proj-item.featured .pi-desc { color: rgba(255,255,255,0.7); }
+.proj-item.featured .pi-pill { background: rgba(255,255,255,0.15); color: #fff; border-color: rgba(255,255,255,0.2); }
+.proj-item.featured .pi-arrow { color: rgba(255,255,255,0.4); }
+.proj-item.featured:hover .pi-arrow { color: #fff; }
 
-  /* ---- shared: entry rows ---- */
-  .entry-row { display: flex; align-items: center; gap: 16px; background: rgba(255,255,255,0.5); border: 1px solid var(--parchment-line); border-left: 3px solid var(--sage); border-radius: 2px; padding: 14px 16px; margin-bottom: 10px; cursor: pointer; transition: background 0.15s; }
-  .entry-row:hover { background: rgba(255,255,255,0.85); }
-  .entry-row.deleted-row { border-left-color: var(--wine); opacity: 0.85; }
-  .entry-row-date { flex: 0 0 108px; font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--wine-deep); line-height: 1.35; }
-  .entry-row-date .weekday { display: block; font-size: 10px; color: var(--text-faint); text-transform: uppercase; letter-spacing: 0.08em; }
-  .entry-row-glimpse { flex: 1; min-width: 0; display: flex; align-items: center; gap: 8px; font-size: 14.5px; color: var(--text-brown); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .entry-row-mood { flex-shrink: 0; font-size: 15px; }
-  .entry-row-restore { flex-shrink: 0; }
-  .row-delete-btn {
-    flex-shrink: 0; background: none; border: none; cursor: pointer;
-    color: var(--text-faint); font-size: 15px; padding: 6px; border-radius: 3px;
-    transition: color 0.15s, background 0.15s;
-  }
-  .row-delete-btn:hover { color: var(--wine); background: rgba(122,42,56,0.08); }
-  .empty-state { text-align: center; padding: 50px 20px; color: var(--text-faint); font-style: italic; font-size: 15px; }
+/* SKILLS */
+.skills-layout-wrap {
+  display: grid;
+  grid-template-columns: 160px 1fr;
+  gap: 48px;
+}
+.skills-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1px;
+  background: var(--line);
+  border: 1px solid var(--line);
+}
+.skill-box {
+  background: var(--white);
+  padding: 28px 32px;
+  transition: background 0.2s;
+}
+.skill-box:hover { background: var(--cream2); }
+.sb-label {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  color: var(--green);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  margin-bottom: 16px;
+}
+.sb-items { display: flex; flex-direction: column; gap: 7px; }
+.sb-item {
+  font-size: 13px;
+  color: var(--ink2);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.sb-item::before { content: ''; width: 3px; height: 3px; background: var(--green); border-radius: 50%; flex-shrink: 0; }
 
-  .btn-sm.sealed { background: rgba(124,143,110,0.25); color: var(--sage); cursor: default; }
-  .auth-waking { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text-faint); margin-top: 10px; display: none; }
-  .auth-waking.active { display: block; }
+/* CERTS */
+.certs-layout {
+  display: grid;
+  grid-template-columns: 160px 1fr;
+  gap: 48px;
+}
+.certs-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+}
+.cert-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  padding: 18px 22px;
+  background: var(--white);
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  transition: border-color 0.2s;
+}
+.cert-card:hover { border-color: var(--green); }
+.cert-mark {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--green);
+  flex-shrink: 0;
+  margin-top: 5px;
+}
+.cert-cn { font-size: 13px; font-weight: 500; color: var(--ink2); margin-bottom: 3px; line-height: 1.4; }
+.cert-ci { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--gray); }
+.cert-cd { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--green); margin-top: 3px; }
 
-  /* ---- Calendar ---- */
-  .cal-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
-  .cal-header button { background: none; border: 1px solid var(--parchment-line); border-radius: 3px; width: 32px; height: 32px; cursor: pointer; color: var(--wine-deep); font-size: 15px; }
-  .cal-month-label { font-family: 'JetBrains Mono', monospace; font-size: 13px; letter-spacing: 0.06em; color: var(--text-brown); }
-  .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; }
-  .cal-dow { font-family: 'JetBrains Mono', monospace; font-size: 9.5px; text-transform: uppercase; color: var(--text-faint); text-align: center; padding-bottom: 4px; }
-  .cal-cell { aspect-ratio: 1; border-radius: 3px; border: 1px solid var(--parchment-line); background: rgba(255,255,255,0.35); display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--text-brown); position: relative; }
-  .cal-cell:hover { border-color: var(--gold); }
-  .cal-cell.empty { visibility: hidden; cursor: default; }
-  .cal-cell.written { background: rgba(185,144,63,0.16); border-color: var(--gold); }
-  .cal-cell.today { border-color: var(--wine); border-width: 2px; }
-  .cal-cell.future { opacity: 0.4; cursor: default; }
-  .cal-cell .dot { position: absolute; bottom: 4px; width: 4px; height: 4px; border-radius: 50%; background: var(--gold); }
+/* CONTACT */
+#contact { background: var(--ink); padding: 100px 0; }
+.contact-wrap { max-width: 1240px; margin: 0 auto; padding: 0 64px; }
+.contact-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 80px;
+  align-items: start;
+}
+.c-eyebrow {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  color: var(--green);
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  margin-bottom: 24px;
+}
+.c-head {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(40px, 5vw, 72px);
+  font-weight: 600;
+  color: #fff;
+  letter-spacing: -2px;
+  line-height: 0.95;
+  margin-bottom: 28px;
+}
+.c-head em { font-style: italic; color: var(--green); filter: brightness(1.4); }
+.c-sub {
+  font-size: 15px;
+  color: #777;
+  line-height: 1.75;
+  font-weight: 300;
+}
+.c-right { padding-top: 20px; display: flex; flex-direction: column; gap: 12px; }
+.c-link {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 24px;
+  border: 1px solid #2a2a2a;
+  border-radius: 4px;
+  text-decoration: none;
+  transition: all 0.2s;
+}
+.c-link:hover { border-color: var(--green); background: rgba(45,80,22,0.1); }
+.c-link-label { font-size: 12px; font-family: 'DM Mono', monospace; color: #555; letter-spacing: 0.05em; text-transform: uppercase; }
+.c-link-val { font-size: 14px; font-weight: 500; color: #ccc; }
+.c-link-arr { color: #444; font-size: 16px; transition: all 0.2s; }
+.c-link:hover .c-link-arr { color: var(--green); transform: translate(3px,-3px); }
+.c-footer {
+  margin-top: 80px;
+  padding-top: 32px;
+  border-top: 1px solid #1a1a1a;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  max-width: 1240px;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 64px;
+  padding-right: 64px;
+}
+.cf-brand {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 18px;
+  font-weight: 600;
+  color: #fff;
+}
+.cf-copy { font-size: 11px; font-family: 'DM Mono', monospace; color: #444; }
 
-  /* ---- Daily page ---- */
-  .daily-back { background: none; border: none; cursor: pointer; font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text-faint); letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 14px; }
-  .daily-back:hover { color: var(--wine); }
-  .page-tabs { display: flex; gap: 8px; margin-bottom: 16px; }
-  .page-tab { background: rgba(255,255,255,0.4); border: 1px solid var(--parchment-line); border-radius: 3px; padding: 6px 14px; font-family: 'JetBrains Mono', monospace; font-size: 11px; cursor: pointer; color: var(--text-faint); }
-  .page-tab.active { border-color: var(--gold); color: var(--wine-deep); background: rgba(185,144,63,0.14); }
-  .page-tab.add { color: var(--sage); border-style: dashed; }
-  textarea.entry-text { width: 100%; min-height: 300px; background: transparent; border: none; resize: vertical; font-family: 'Lora', serif; font-size: 16px; line-height: 32px; color: var(--text-brown); outline: none; padding: 0; }
-  textarea.entry-text::placeholder { color: var(--text-faint); font-style: italic; }
-  textarea.entry-text:disabled { color: var(--text-brown); opacity: 0.85; }
-  .char-counter { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text-faint); text-align: right; margin-top: 4px; }
-  .char-counter.near-limit { color: var(--gold); }
-  .char-counter.at-limit { color: var(--wine); }
-  .limit-hint {
-    background: rgba(122,42,56,0.08); border: 1px solid rgba(122,42,56,0.25); border-radius: 3px;
-    padding: 10px 14px; margin-top: 8px; font-size: 13px; color: var(--wine-deep);
-    animation: fade 0.3s ease;
-  }
-  .aspira-mood { font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--gold); text-transform: uppercase; letter-spacing: 0.06em; }
-  .aspira-mood strong { color: var(--wine-deep); }
-  .aspira-prompt-label { font-family: 'JetBrains Mono', monospace; font-size: 10.5px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-faint); margin-top: 16px !important; margin-bottom: 4px !important; }
-  .aspira-prompt-text { font-style: italic; color: var(--wine-deep); }
-  .moods { display: flex; gap: 6px; }
-  .mood-btn { background: none; border: 1px solid transparent; border-radius: 50%; width: 34px; height: 34px; font-size: 17px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: border-color 0.15s, transform 0.15s; }
-  .mood-btn:hover { transform: scale(1.1); }
-  .mood-btn.selected { border-color: var(--gold); background: rgba(185,144,63,0.15); }
-  .toolbar { display: flex; align-items: center; justify-content: space-between; margin-top: 14px; flex-wrap: wrap; gap: 12px; }
-  .save-status { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--sage); margin-top: 10px; min-height: 14px; }
-  .daily-meta-row { display: flex; justify-content: space-between; align-items: center; margin-top: 18px; padding-top: 14px; border-top: 1px solid var(--parchment-line); }
-  .link-btn { background: none; border: none; cursor: pointer; font-family: 'JetBrains Mono', monospace; font-size: 10.5px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--sage); }
-  .link-btn.danger { color: var(--wine); }
-  .confirm-inline { background: rgba(122,42,56,0.08); border: 1px solid rgba(122,42,56,0.3); border-radius: 3px; padding: 12px 14px; margin-top: 10px; font-size: 13.5px; }
-  .confirm-inline .row { display: flex; gap: 10px; margin-top: 10px; }
+@media(max-width:900px){
+  nav { padding: 0 24px; }
+  .nav-center { display: none; }
+  #hero { padding-top: 68px; }
+  .hero-top { grid-template-columns: 1fr; }
+  .hero-main { padding: 40px 24px; }
+  .hero-side { padding: 32px 24px; flex-direction: row; flex-wrap: wrap; gap: 20px; border-top: 1px solid var(--line); }
+  .hero-side-stat { border-bottom: none; padding-right: 20px; }
+  .hero-bottom { grid-template-columns: 1fr 1fr; }
+  .wrap { padding: 0 24px; }
+  .sh { grid-template-columns: 1fr; gap: 12px; }
+  .about-layout, .exp-layout, .proj-layout, .skills-layout-wrap, .certs-layout { grid-template-columns: 1fr; gap: 24px; }
+  .about-content { grid-template-columns: 1fr; gap: 32px; }
+  .exp-entry { grid-template-columns: 1fr; gap: 8px; }
+  .skills-grid { grid-template-columns: 1fr 1fr; }
+  .certs-grid { grid-template-columns: 1fr; }
+  .contact-grid { grid-template-columns: 1fr; gap: 48px; }
+  .contact-wrap, .c-footer { padding-left: 24px; padding-right: 24px; }
+  .c-footer { flex-direction: column; gap: 16px; text-align: center; }
+}
+.nav-right-group {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+.nav-github {
+  color: var(--gray);
+  display: flex;
+  align-items: center;
+  transition: color 0.2s;
+}
+.nav-github:hover { color: var(--green); }
+ 
+.nav-resume-btn {
+  font-family: 'DM Mono', monospace;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  padding: 7px 16px;
+  border: 1px solid var(--line);
+  border-radius: 100px;
+  color: var(--ink2);
+  text-decoration: none;
+  transition: all 0.2s;
+}
+.nav-resume-btn:hover {
+  border-color: var(--green);
+  color: var(--green);
+  background: var(--green-lt);
+}
 
-  /* ---- Buttons small ---- */
-  .btn-sm { font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; padding: 8px 16px; border-radius: 50px; cursor: pointer; border: none; }
-  .btn-sm.wine { background: var(--wine); color: var(--parchment); }
-  .btn-sm.sage { background: var(--sage); color: var(--parchment); }
-  .btn-sm.outline { background: transparent; border: 1px solid var(--parchment-line); color: var(--text-brown); }
-
-  /* ---- Wallet ---- */
-  .wallet-balance { background: rgba(185,144,63,0.12); border: 1px solid rgba(185,144,63,0.35); border-radius: 4px; padding: 22px; text-align: center; margin-bottom: 24px; }
-  .wallet-balance .coins { font-family: 'Fraunces', serif; font-size: 40px; color: var(--wine-deep); }
-  .wallet-balance .coins-label { font-family: 'JetBrains Mono', monospace; font-size: 10.5px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-faint); margin-top: 4px; }
-  .tx-row { display: flex; justify-content: space-between; align-items: center; padding: 12px 4px; border-bottom: 1px solid var(--parchment-line); font-size: 13.5px; }
-  .tx-meta { color: var(--text-faint); font-family: 'JetBrains Mono', monospace; font-size: 10.5px; }
-  .tx-amt.earn { color: var(--sage); font-family: 'JetBrains Mono', monospace; }
-  .tx-amt.spend { color: var(--wine); font-family: 'JetBrains Mono', monospace; }
-
-  /* ---- Settings ---- */
-  .settings-group { margin-bottom: 26px; }
-  .settings-group-title { font-family: 'JetBrains Mono', monospace; font-size: 10.5px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-faint); margin-bottom: 10px; }
-  .settings-row { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid var(--parchment-line); }
-  .settings-row-label { font-size: 14.5px; }
-  .settings-row-desc { font-size: 12px; color: var(--text-faint); margin-top: 2px; }
-  .theme-swatches { display: flex; gap: 8px; }
-  .swatch { width: 26px; height: 26px; border-radius: 50%; cursor: pointer; border: 2px solid transparent; }
-  .swatch.selected { border-color: var(--wine-deep); }
-
-  /* ---- Search ---- */
-  .search-row { display: flex; gap: 10px; margin-bottom: 20px; }
-  .search-row input { flex: 1; background: #fff; border: 1px solid var(--parchment-line); border-radius: 3px; padding: 9px 12px; font-family: 'Lora', serif; font-size: 14px; color: var(--text-brown); outline: none; }
-  .search-row input:focus { border-color: var(--gold); }
-
-  /* ---- modal ---- */
-  .overlay { position: fixed; inset: 0; background: rgba(16,22,30,0.6); display: none; align-items: center; justify-content: center; padding: 20px; z-index: 20; }
-  .overlay.active { display: flex; }
-  .overlay-card { background: var(--parchment); border-radius: 4px; max-width: 420px; width: 100%; padding: 28px 30px; box-shadow: 0 20px 50px rgba(0,0,0,0.4); text-align: center; }
-  .overlay-card h2 { font-family: 'Fraunces', serif; font-size: 22px; color: var(--wine-deep); margin: 0 0 10px; }
-  .overlay-card p { font-size: 14px; color: var(--text-brown); margin: 0 0 18px; line-height: 1.5; }
-  .overlay-actions-row { display: flex; gap: 10px; justify-content: center; }
-
-  @media (max-width: 640px) {
-    .book { flex-direction: column; min-height: unset; }
-    .spine { width: 100%; flex-direction: row; padding: 10px; justify-content: center; flex-wrap: wrap; }
-    .spine-title { display: none; }
-    .tab { writing-mode: horizontal-tb; padding: 8px 12px; border-left: none; border-bottom: 3px solid transparent; }
-    .tab-logout { margin-top: 0 !important; }
-    .page { max-height: none; padding: 24px 18px 30px; }
-    .dash-grid { grid-template-columns: 1fr; }
-    .landing-actions { flex-direction: column; }
-  }
-  button:focus-visible, input:focus-visible, textarea:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
+.btn-c {
+  font-size: 13px;
+  font-weight: 500;
+  padding: 12px 28px;
+  border: 1px solid var(--line);
+  color: var(--gray);
+  border-radius: 100px;
+  text-decoration: none;
+  transition: all 0.2s;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  letter-spacing: 0.02em;
+}
+.btn-c:hover {
+  border-color: var(--green);
+  color: var(--green);
+  background: var(--green-lt);
+}
+a.nav-brand { text-decoration: none; }
 </style>
 </head>
 <body>
 
-<!-- ============ LANDING ============ -->
-<section class="screen active" id="screen-landing">
-  <div class="landing-wrap">
-    <p class="landing-eyebrow">A private place, always with you</p>
-    <h1 class="landing-title">Write it down.<br><em>Never lose it again.</em></h1>
-    <p class="landing-sub">Daybook is a personal diary that lives online — one page a day, a streak that keeps you honest, and nothing that gets torn out or left on a train.</p>
-    <div class="landing-mock">
-      <div class="mock-date">Tuesday, August 11</div>
-      <div class="mock-line" style="width:60%;"></div>
-      <div class="mock-line"></div>
-      <div class="mock-line"></div>
-      <div class="mock-line"></div>
-    </div>
-    <div class="landing-actions">
-      <button class="btn btn-primary" id="landingSignup">Sign up</button>
-      <button class="btn btn-ghost" id="landingLogin">Log in</button>
-    </div>
-    <p class="landing-privacy">Your pages stay tied to your account, never shared. <a href="#" id="landingPrivacyLink">Privacy &amp; terms</a></p>
+<nav>
+  <a href="#hero" class="nav-brand">
+    <div class="nav-brand-name">Chanikya Sai Kumar</div>
+    <div class="nav-brand-sub"></div>
+  </a>
+  <div class="nav-center">
+    <a href="#about">About</a>
+    <a href="#education">Education</a>
+    <a href="#experience">Experience</a>
+    <a href="#projects">Projects</a>
+    <a href="#skills">Skills</a>
+    <a href="#certifications">Certifications</a>
+    <a href="#contact">Contact</a>
   </div>
-</section>
-
-<!-- ============ REGISTER ============ -->
-<section class="screen auth-screen" id="screen-register">
-  <div class="auth-card">
-    <p class="eyebrow">First page</p>
-    <h1>Create your Daybook</h1>
-    <p class="auth-sub">You'll start with 20 MindCoins on the house.</p>
-    <div class="field">
-      <label for="regEmail">Email</label>
-      <input type="email" id="regEmail" placeholder="you@example.com">
-    </div>
-    <div class="field">
-      <label for="regPassword">Password</label>
-      <input type="password" id="regPassword" placeholder="At least 6 characters">
-    </div>
-    <div class="field">
-      <label for="regPassword2">Confirm password</label>
-      <input type="password" id="regPassword2" placeholder="Type it again">
-    </div>
-    <div class="field-error" id="regError"></div>
-    <button class="btn btn-primary" id="regSubmit">Create my diary</button>
-    <p class="auth-waking" id="regWaking">Connecting... if the server's been quiet, this can take up to a minute to wake up.</p>
-    <button class="auth-switch" id="regToLogin">Already have a Daybook? Log in</button>
-  </div>
-</section>
-
-<!-- ============ LOGIN ============ -->
-<section class="screen auth-screen" id="screen-login">
-  <div class="auth-card">
-    <p class="eyebrow">Welcome back</p>
-    <h1>Log in to Daybook</h1>
-    <p class="auth-sub">Pick up right where you left off.</p>
-    <div class="field">
-      <label for="loginEmail">Email</label>
-      <input type="email" id="loginEmail" placeholder="you@example.com">
-    </div>
-    <div class="field">
-      <label for="loginPassword">Password</label>
-      <input type="password" id="loginPassword" placeholder="Your password">
-    </div>
-    <div class="field-error" id="loginError"></div>
-    <button class="btn btn-primary" id="loginSubmit">Log in</button>
-    <p class="auth-waking" id="loginWaking">Connecting... if the server's been quiet, this can take up to a minute to wake up.</p>
-    <button class="auth-switch" id="loginToRegister">New here? Sign up</button>
-  </div>
-</section>
-
-<!-- ============ APP (post-login) ============ -->
-<section class="screen" id="screen-app">
-  <div class="book">
-    <nav class="spine">
-      <div class="spine-title">Daybook</div>
-      <button class="tab active" data-color="wine" data-inner="dashboard">Home</button>
-      <button class="tab" data-color="sage" data-inner="calendar">Calendar</button>
-      <button class="tab" data-color="gold" data-inner="wallet">Wallet</button>
-      <button class="tab" data-color="faint" data-inner="deleted">Deleted</button>
-      <button class="tab" data-color="faint" data-inner="settings">Settings</button>
-      <button class="tab tab-logout" id="logoutBtn" data-color="faint">Logout</button>
-    </nav>
-
-    <main class="page">
-
-      <!-- DASHBOARD -->
-      <section class="inner-view active" id="inner-dashboard">
-        <p class="eyebrow" id="dashGreetingEyebrow"></p>
-        <h1 class="section-heading" id="dashGreeting">Welcome back</h1>
-
-        <div class="dash-grid">
-          <div class="dash-box"><div class="dash-num" id="dashCoins">0</div><div class="dash-label">MindCoins</div></div>
-          <div class="dash-box"><div class="dash-num" id="dashStreak">0</div><div class="dash-label">Day streak</div></div>
-          <div class="dash-box"><div class="dash-num" id="dashTotal">0</div><div class="dash-label">Pages written</div></div>
-        </div>
-
-        <div class="dash-cta">
-          <button class="btn btn-primary" id="writeTodayBtn">Write today's page</button>
-          <button class="btn btn-ghost" id="goCalendarBtn" style="color:var(--wine-deep); border-color:var(--parchment-line);">Browse calendar</button>
-        </div>
-
-        <p class="dash-recent-title">Recent pages</p>
-        <div id="dashRecent"></div>
-      </section>
-
-      <!-- CALENDAR -->
-      <section class="inner-view" id="inner-calendar">
-        <p class="eyebrow">Browse</p>
-        <h1 class="section-heading">Calendar</h1>
-        <div class="cal-header">
-          <button id="calPrev">‹</button>
-          <span class="cal-month-label" id="calMonthLabel"></span>
-          <button id="calNext">›</button>
-        </div>
-        <div class="cal-grid" id="calGrid"></div>
-        <div class="search-row" style="margin-top:24px;">
-          <input type="text" id="searchInput" placeholder="Search pages by word or date...">
-        </div>
-        <div id="entriesList"></div>
-      </section>
-
-      <!-- DAILY PAGE -->
-      <section class="inner-view" id="inner-daily">
-        <button class="daily-back" id="dailyBack">‹ Back</button>
-        <p class="eyebrow" id="dailyEyebrow"></p>
-        <h1 class="section-heading" id="dailyHeading"></h1>
-
-        <div class="page-tabs" id="dailyPageTabs"></div>
-
-        <textarea class="entry-text" id="entryText" placeholder="Begin wherever you are..." maxlength="2000"></textarea>
-        <div class="char-counter" id="charCounter">0 / 2000 characters</div>
-        <div class="limit-hint" id="limitHint" style="display:none;">You've reached the page limit. Use "Buy an extra page" below to keep writing today's entry.</div>
-
-        <div class="toolbar">
-          <div class="moods" id="moods">
-            <button class="mood-btn" data-mood="😊" title="Good">😊</button>
-            <button class="mood-btn" data-mood="😐" title="Neutral">😐</button>
-            <button class="mood-btn" data-mood="😔" title="Low">😔</button>
-            <button class="mood-btn" data-mood="😤" title="Frustrated">😤</button>
-            <button class="mood-btn" data-mood="✨" title="Grateful">✨</button>
-          </div>
-          <button class="btn-sm wine" id="saveBtn">Seal this page</button>
-        </div>
-        <button class="link-btn" id="editPageBtn" style="display:none; margin-top:10px;">Edit this page</button>
-        <div class="save-status" id="saveStatus"></div>
-
-        <div class="daily-meta-row" id="dailyMetaRow">
-          <button class="link-btn" id="buyPageBtn">+ Buy an extra page (5 coins)</button>
-          <button class="link-btn" id="aspiraBtn" style="display:none;">✨ Reflect with Aspira</button>
-          <button class="link-btn danger" id="deleteBtn">Delete this page</button>
-        </div>
-        <div class="confirm-inline" id="deleteConfirm1" style="display:none;">
-          Delete this page? It'll move to Deleted Items and cost coins to bring back.
-          <div class="row">
-            <button class="btn-sm wine" id="deleteConfirmYes1">Yes, delete</button>
-            <button class="btn-sm outline" id="deleteConfirmNo1">Cancel</button>
-          </div>
-        </div>
-        <div class="confirm-inline" id="deleteConfirm2" style="display:none;">
-          Last check — this sends the page to Deleted Items. Restoring later costs 5 MindCoins.
-          <div class="row">
-            <button class="btn-sm wine" id="deleteConfirmYes2">Delete for good</button>
-            <button class="btn-sm outline" id="deleteConfirmNo2">Keep it</button>
-          </div>
-        </div>
-      </section>
-
-      <!-- WALLET -->
-      <section class="inner-view" id="inner-wallet">
-        <p class="eyebrow">Your economy</p>
-        <h1 class="section-heading">Wallet</h1>
-        <div class="wallet-balance">
-          <div class="coins" id="walletCoins">0</div>
-          <div class="coins-label">MindCoins</div>
-        </div>
-        <p class="dash-recent-title">Transactions</p>
-        <div id="txList"></div>
-      </section>
-
-      <!-- DELETED -->
-      <section class="inner-view" id="inner-deleted">
-        <p class="eyebrow">Second chances</p>
-        <h1 class="section-heading">Deleted Items</h1>
-        <div id="deletedList"></div>
-      </section>
-
-      <!-- SETTINGS -->
-      <section class="inner-view" id="inner-settings">
-        <p class="eyebrow">Your account</p>
-        <h1 class="section-heading">Settings</h1>
-
-        <div class="settings-group">
-          <div class="settings-group-title">Appearance</div>
-          <div class="settings-row">
-            <div>
-              <div class="settings-row-label">Accent theme</div>
-              <div class="settings-row-desc">Changes the page's accent color</div>
-            </div>
-            <div class="theme-swatches" id="themeSwatches">
-              <div class="swatch" data-theme="wine" style="background:#7A2A38;"></div>
-              <div class="swatch" data-theme="sage" style="background:#7C8F6E;"></div>
-              <div class="swatch" data-theme="gold" style="background:#B9903F;"></div>
-            </div>
-          </div>
-        </div>
-
-        <div class="settings-group">
-          <div class="settings-group-title">Your data</div>
-          <div class="settings-row">
-            <div>
-              <div class="settings-row-label">Export your diary</div>
-              <div class="settings-row-desc">Download every page as a JSON file</div>
-            </div>
-            <button class="btn-sm outline" id="exportBtn">Export</button>
-          </div>
-        </div>
-
-        <div class="settings-group">
-          <div class="settings-group-title">Danger zone</div>
-          <div class="settings-row" style="border-bottom:none;">
-            <div>
-              <div class="settings-row-label">Delete account</div>
-              <div class="settings-row-desc">Erases your profile and every page. Cannot be undone.</div>
-            </div>
-            <button class="btn-sm wine" id="deleteAccountBtn">Delete account</button>
-          </div>
-        </div>
-      </section>
-
-    </main>
-  </div>
-</section>
-
-<!-- ============ MODALS ============ -->
-<!-- ============ ASPIRA RESULT MODAL ============ -->
-<div class="overlay" id="aspiraResultOverlay">
-  <div class="overlay-card">
-    <h2>Aspira's Reflection</h2>
-    <p class="aspira-mood">Mood: <strong id="aspiraMood"></strong></p>
-    <p id="aspiraSummary"></p>
-    <p class="aspira-prompt-label">A prompt to sit with:</p>
-    <p id="aspiraPrompt" class="aspira-prompt-text"></p>
-    <div class="overlay-actions-row">
-      <button class="btn-sm outline" id="aspiraCopyBtn">Copy prompt</button>
-      <button class="btn-sm wine" id="aspiraCloseBtn">Close</button>
-    </div>
-  </div>
+  <div class="nav-right-group">
+ 
+  <!-- GitHub Icon Link -->
+  <a href="https://github.com/Chanikyasaikumar"
+     target="_blank"
+     class="nav-github"
+     title="GitHub Profile">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+      <path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/>
+    </svg>
+  </a>
+ 
+  <!-- Resume Download Button -->
+  <a href="https://drive.google.com/uc?export=download&id=1nzcLJ_pgshh6eoavl3xf4wMmyWnMdGu9"
+     class="nav-resume-btn"
+     download>
+    ⬇️ Download CV
+  </a>
+ 
+  <!-- Keep your existing available-for-work dot here -->
+  <!-- <div class="nav-right">
+    <div class="nav-dot"></div>
+    Available for work
+  </div> -->
+ 
 </div>
+</nav>
 
-<!-- ============ GENERIC CONFIRM MODAL (reused for row-delete, buy-page, delete-account step 1) ============ -->
-<div class="overlay" id="confirmOverlay">
-  <div class="overlay-card">
-    <h2 id="confirmTitle">Are you sure?</h2>
-    <p id="confirmMessage"></p>
-    <div class="overlay-actions-row">
-      <button class="btn-sm outline" id="confirmCancelBtn">Cancel</button>
-      <button class="btn-sm wine" id="confirmOkBtn">Continue</button>
-    </div>
-  </div>
-</div>
-
-<div class="overlay" id="deleteAccountOverlay">
-  <div class="overlay-card">
-    <h2>Delete your account?</h2>
-    <p>This permanently erases your profile, every page, and your MindCoins. Type your password to confirm.</p>
-    <div class="field" style="text-align:left;">
-      <input type="password" id="deleteAccountPassword" placeholder="Your password">
-    </div>
-    <div class="field-error" id="deleteAccountError"></div>
-    <div class="overlay-actions-row">
-      <button class="btn-sm outline" id="deleteAccountCancel">Cancel</button>
-      <button class="btn-sm wine" id="deleteAccountConfirm">Delete everything</button>
-    </div>
-  </div>
-</div>
-
-<script>
-(function() {
-  /* ============================================================
-     This version talks to the real Daybook backend instead of
-     local storage. All data lives in your MongoDB Atlas database
-     via the API hosted on Render.
-  ============================================================ */
-  const API_BASE = 'https://daybook-backend-gdd3.onrender.com';
-
-  const RESTORE_COST = 5;
-  const EXTRA_PAGE_COST = 5;
-  const PAGE_CHAR_LIMIT = 2000;
-
-  let profile = null;       // { email, mindcoins, streak, longest_streak, created_at }
-  let authToken = null;     // JWT, kept in memory only — cleared on logout/refresh
-  let entries = {};         // dateKey -> { id, pages, allowed_pages, deleted }
-  let transactions = [];    // array from GET /transactions
-
-  let currentDailyKey = null;
-  let currentPageIndex = 0;
-  let selectedMood = null;
-  let calViewDate = new Date();
-  let currentTheme = 'wine';
-  let forceEditMode = false;
-
-  const pad2 = n => String(n).padStart(2, '0');
-  const keyOf = d => d.getFullYear() + '-' + pad2(d.getMonth()+1) + '-' + pad2(d.getDate());
-  const dateFromKey = k => { const [y,m,d] = k.split('-').map(Number); return new Date(y, m-1, d); };
-  const todayKey = () => keyOf(new Date());
-  const formatShort = k => dateFromKey(k).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' });
-  const formatLong = k => dateFromKey(k).toLocaleDateString(undefined, { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
-  const formatWeekday = k => dateFromKey(k).toLocaleDateString(undefined, { weekday: 'short' });
-  const escapeHtml = str => { const d = document.createElement('div'); d.textContent = str; return d.innerHTML; };
-
-  /* ============================================================
-     GENERIC CONFIRM MODAL
-  ============================================================ */
-  function askConfirm(title, message, okLabel) {
-    return new Promise(resolve => {
-      document.getElementById('confirmTitle').textContent = title;
-      document.getElementById('confirmMessage').textContent = message;
-      const okBtn = document.getElementById('confirmOkBtn');
-      const cancelBtn = document.getElementById('confirmCancelBtn');
-      okBtn.textContent = okLabel || 'Continue';
-      const overlay = document.getElementById('confirmOverlay');
-      overlay.classList.add('active');
-      function cleanup(result) {
-        overlay.classList.remove('active');
-        okBtn.removeEventListener('click', onOk);
-        cancelBtn.removeEventListener('click', onCancel);
-        resolve(result);
-      }
-      function onOk() { cleanup(true); }
-      function onCancel() { cleanup(false); }
-      okBtn.addEventListener('click', onOk);
-      cancelBtn.addEventListener('click', onCancel);
-    });
-  }
-
-  /* ============================================================
-     API HELPER
-  ============================================================ */
-  async function api(path, { method = 'GET', body = null, form = null, auth = true } = {}) {
-    const headers = {};
-    if (auth && authToken) headers['Authorization'] = 'Bearer ' + authToken;
-    let fetchBody = undefined;
-    if (form) {
-      fetchBody = new URLSearchParams(form);
-    } else if (body) {
-      headers['Content-Type'] = 'application/json';
-      fetchBody = JSON.stringify(body);
-    }
-    let res;
-    try {
-      res = await fetch(API_BASE + path, { method, headers, body: fetchBody });
-    } catch (e) {
-      throw { networkError: true, message: 'Could not reach the server. It may be waking up from sleep — try again in a moment.' };
-    }
-    let data = null;
-    try { data = await res.json(); } catch (e) { /* no body */ }
-    if (!res.ok) {
-      const detail = data && data.detail;
-      const message = Array.isArray(detail) ? (detail[0] && detail[0].msg) : (detail || ('Request failed (' + res.status + ')'));
-      throw { status: res.status, message };
-    }
-    return data;
-  }
-
-  /* ============================================================
-     SCREEN / VIEW ROUTING
-  ============================================================ */
-  function showScreen(name) {
-    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-    document.getElementById('screen-' + name).classList.add('active');
-  }
-  function showInner(name) {
-    document.querySelectorAll('.tab[data-inner]').forEach(t => t.classList.toggle('active', t.dataset.inner === name));
-    document.querySelectorAll('.inner-view').forEach(v => v.classList.remove('active'));
-    document.getElementById('inner-' + name).classList.add('active');
-    if (name === 'dashboard') renderDashboard();
-    if (name === 'calendar') { renderCalendar(); renderEntriesList(); }
-    if (name === 'wallet') refreshWallet();
-    if (name === 'deleted') renderDeletedList();
-  }
-
-  document.getElementById('landingSignup').addEventListener('click', () => showScreen('register'));
-  document.getElementById('landingLogin').addEventListener('click', () => showScreen('login'));
-  document.getElementById('landingPrivacyLink').addEventListener('click', e => { e.preventDefault(); alert('Your pages are stored under your account only in a real database, and are never shared.'); });
-  document.getElementById('regToLogin').addEventListener('click', () => showScreen('login'));
-  document.getElementById('loginToRegister').addEventListener('click', () => showScreen('register'));
-
-  document.querySelectorAll('.tab[data-inner]').forEach(tab => {
-    tab.addEventListener('click', () => showInner(tab.dataset.inner));
-  });
-
-  /* ============================================================
-     AUTH: REGISTER / LOGIN / LOGOUT
-  ============================================================ */
-  document.getElementById('regSubmit').addEventListener('click', async () => {
-    const email = document.getElementById('regEmail').value.trim().toLowerCase();
-    const pw = document.getElementById('regPassword').value;
-    const pw2 = document.getElementById('regPassword2').value;
-    const err = document.getElementById('regError');
-    err.textContent = '';
-
-    if (!/^\S+@\S+\.\S+$/.test(email)) { err.textContent = 'Enter a valid email.'; return; }
-    if (pw.length < 6) { err.textContent = 'Password must be at least 6 characters.'; return; }
-    if (pw !== pw2) { err.textContent = 'Passwords don\'t match.'; return; }
-
-    const btn = document.getElementById('regSubmit');
-    const waking = document.getElementById('regWaking');
-    btn.disabled = true; btn.textContent = 'Creating...';
-    waking.classList.add('active');
-    try {
-      await api('/auth/register', { method: 'POST', body: { email, password: pw }, auth: false });
-      alert('Welcome to Daybook! Your account is ready — log in to start writing.');
-      document.getElementById('loginEmail').value = email;
-      showScreen('login');
-    } catch (e) {
-      err.textContent = e.message || 'Could not create your account. Try again.';
-    } finally {
-      btn.disabled = false; btn.textContent = 'Create my diary';
-      waking.classList.remove('active');
-    }
-  });
-
-  document.getElementById('loginSubmit').addEventListener('click', async () => {
-    const email = document.getElementById('loginEmail').value.trim().toLowerCase();
-    const pw = document.getElementById('loginPassword').value;
-    const err = document.getElementById('loginError');
-    err.textContent = '';
-
-    const btn = document.getElementById('loginSubmit');
-    const waking = document.getElementById('loginWaking');
-    btn.disabled = true; btn.textContent = 'Logging in...';
-    waking.classList.add('active');
-    try {
-      const tokenRes = await api('/auth/token', { method: 'POST', form: { username: email, password: pw }, auth: false });
-      authToken = tokenRes.access_token;
-      profile = await api('/auth/me');
-      await loadEverything();
-      showScreen('app');
-      showInner('dashboard');
-    } catch (e) {
-      err.textContent = e.networkError ? e.message : 'Email or password is incorrect.';
-      const card = document.getElementById('screen-login').querySelector('.auth-card');
-      card.classList.add('shake');
-      setTimeout(() => card.classList.remove('shake'), 350);
-    } finally {
-      btn.disabled = false; btn.textContent = 'Log in';
-      waking.classList.remove('active');
-    }
-  });
-
-  document.getElementById('logoutBtn').addEventListener('click', () => {
-    authToken = null;
-    profile = null;
-    entries = {};
-    transactions = [];
-    document.getElementById('loginEmail').value = '';
-    document.getElementById('loginPassword').value = '';
-    showScreen('login');
-  });
-
-  /* ============================================================
-     LOAD DATA
-  ============================================================ */
-  async function loadEverything() {
-    entries = {};
-    try {
-      const list = await api('/diary/entries?include_deleted=true');
-      for (const e of list) {
-        entries[e.date] = { id: e.id, pages: e.pages, allowed_pages: e.allowed_pages, deleted: e.deleted };
-      }
-    } catch (e) { console.error('load entries failed', e); }
-
-    try {
-      transactions = await api('/transactions?limit=100');
-    } catch (e) { console.error('load tx failed', e); }
-  }
-
-  async function refreshProfile() {
-    try { profile = await api('/auth/me'); } catch (e) { console.error('refresh profile failed', e); }
-  }
-
-  /* ============================================================
-     DASHBOARD
-  ============================================================ */
-  function renderDashboard() {
-    document.getElementById('dashGreetingEyebrow').textContent = new Date().toLocaleDateString(undefined, { weekday: 'long', month: 'long', day: 'numeric' });
-    document.getElementById('dashGreeting').textContent = 'Welcome back' + (profile && profile.email ? ', ' + profile.email.split('@')[0] : '');
-    document.getElementById('dashCoins').textContent = profile ? profile.mindcoins : 0;
-    document.getElementById('dashStreak').textContent = profile ? profile.streak : 0;
-    const activeCount = Object.keys(entries).filter(k => !entries[k].deleted).length;
-    document.getElementById('dashTotal').textContent = activeCount;
-
-    const recent = Object.keys(entries).filter(k => !entries[k].deleted).sort().reverse().slice(0, 4);
-    const recentEl = document.getElementById('dashRecent');
-    if (!recent.length) {
-      recentEl.innerHTML = '<div class="empty-state">Nothing written yet. Today is blank until you fill it.</div>';
-    } else {
-      recentEl.innerHTML = recent.map(k => rowHtml(k)).join('');
-      wireEntryRows(recentEl);
-    }
-  }
-
-  document.getElementById('writeTodayBtn').addEventListener('click', () => openDaily(todayKey()));
-  document.getElementById('goCalendarBtn').addEventListener('click', () => showInner('calendar'));
-
-  function rowHtml(k) {
-    const e = entries[k];
-    const firstPage = e.pages && e.pages[0] ? e.pages[0] : { text: '', mood: null };
-    const firstLine = (firstPage.text.split('\n').find(l => l.trim().length) || '').trim();
-    return `<div class="entry-row" data-key="${k}">
-      <div class="entry-row-date"><span class="weekday">${formatWeekday(k)}</span>${dateFromKey(k).toLocaleDateString(undefined,{month:'short',day:'numeric'})}</div>
-      <div class="entry-row-glimpse">
-        <span class="entry-row-mood">${firstPage.mood || ''}</span>
-        <span>${escapeHtml(firstLine) || '<span style="color:var(--text-faint);font-style:italic;">(no text)</span>'}</span>
+<!-- HERO -->
+<div id="hero">
+  <div class="hero-top">
+    <div class="hero-main">
+      <div class="hero-label">Fresher · B.Tech CSE · Class of 2025</div>
+      <h1 class="hero-name">
+        Chanikya<br/>
+        <span class="line2">Sai Kumar</span><br/>
+        Devarasetty
+      </h1>
+      <p class="hero-intro">
+        A <strong>versatile tech graduate</strong> with 5 internships and 4 real-world projects spanning <strong>data analytics</strong>, <strong>web development</strong>, <strong>Python automation</strong>, and <strong>AI tooling</strong>. Ready to contribute from day one.
+      </p>
+      <div class="hero-actions">
+        <a href="#projects" class="btn-a">View My Work</a>
+        <a href="#contact" class="btn-b">Get in Touch</a>
+      
       </div>
-      <button class="row-delete-btn" data-key="${k}" title="Delete this page" aria-label="Delete this page">🗑</button>
-    </div>`;
-  }
-  function wireEntryRows(container) {
-    container.querySelectorAll('.entry-row').forEach(row => {
-      row.addEventListener('click', () => openDaily(row.dataset.key));
-    });
-    container.querySelectorAll('.row-delete-btn').forEach(btn => {
-      btn.addEventListener('click', async (e) => {
-        e.stopPropagation();
-        const k = btn.dataset.key;
-        const entry = entries[k];
-        if (!entry || !entry.id) return;
-        const ok = await askConfirm('Delete this page?', 'It moves to Deleted Items — you can restore it later for ' + RESTORE_COST + ' MindCoins.', 'Delete page');
-        if (!ok) return;
-        try {
-          await api('/diary/entry/' + entry.id, { method: 'DELETE' });
-          entries[k].deleted = true;
-          renderDashboard();
-          renderCalendar();
-          renderEntriesList();
-        } catch (err) {
-          alert(err.message || 'Could not delete this page.');
-        }
-      });
-    });
-  }
+    </div>
+    <div class="hero-side">
+      <div class="hero-side-stat">
+        <div class="hsn">3+</div> 
+        <div class="hsl">Internships completed</div>
+        <div class="hsd">GVS · Ozibook · Hunar</div>
+      </div>
+      <div class="hero-side-stat">
+        <div class="hsn">5</div>
+        <div class="hsl">Projects shipped</div>
+        <div class="hsd">AI · Full-Stack · Automation · Backend</div>
+      </div>
+      <div class="hero-side-stat">
+        <div class="hsn">8</div>
+        <div class="hsl">Certifications earned</div>
+        <div class="hsd">AWS · McKinsey · Cisco · IBM · Accenture</div>
+      </div>
+    </div>
+  </div>
+  <div class="hero-bottom">
+    <div class="hero-role-pill active">Data Analyst</div>
+    <div class="hero-role-pill">Web Developer</div>
+    <div class="hero-role-pill">Python Dev</div>
+    <div class="hero-role-pill">AI Engineer</div>
+    <div class="hero-role-pill">Automation</div>
+  </div>
+</div>
 
-  /* ============================================================
-     CALENDAR
-  ============================================================ */
-  document.getElementById('calPrev').addEventListener('click', () => { calViewDate.setMonth(calViewDate.getMonth()-1); renderCalendar(); });
-  document.getElementById('calNext').addEventListener('click', () => { calViewDate.setMonth(calViewDate.getMonth()+1); renderCalendar(); });
+<!-- ABOUT -->
+<div class="wrap"><section class="sec" id="about">
+  <div class="sh"><span class="sh-num">01 — About</span><h2 class="sh-title">Who I Am</h2></div>
+  <div class="about-layout">
+    <div class="about-spacer"></div>
+    <div class="about-content">
+      <div class="about-text">
+        <p>I'm <strong>Chanikya Sai Kumar</strong> — a Computer Science graduate from Manav Rachna International Institute of Research & Studies who moves fluently across the full tech stack.</p>
+        <p>My work spans <strong>data analytics and dashboards</strong>, <strong>full-stack web applications</strong>, <strong>Python automation pipelines</strong>, and <strong>AI-powered tools</strong> — giving me a versatility that most freshers don't have.</p>
+        <p>From Power BI dashboards at Ozibook to full-stack apps at GVS India, from 50%+ effort reduction automation at Hunar Intern to an <strong>AI hiring agent using Gemini 2.5 Flash</strong> — I bring real, hands-on experience to every role.</p>
+      </div>
+      <div class="about-details">
+        <div class="detail-row"><div class="detail-label">Education</div><div class="detail-val">B.Tech - Computer Science & Engineering</div></div>
+        <div class="detail-row"><div class="detail-label">Location</div><div class="detail-val">Hyderabad, Telangana, India</div></div>
+        <div class="detail-row"><div class="detail-label">Status</div><div class="detail-val">Actively seeking full-time roles</div></div>
+        <div class="detail-row"><div class="detail-label">Open To</div><div class="detail-val">Data · Web · Software · AI · Automation</div></div>
+        <div class="detail-row"><div class="detail-label">Email</div><div class="detail-val" style="font-size:12px;word-break:break-all;">chanikya668@gmail.com</div></div>
+      </div>
+    </div>
+  </div>
+</section></div>
 
-  function renderCalendar() {
-    const y = calViewDate.getFullYear(), m = calViewDate.getMonth();
-    document.getElementById('calMonthLabel').textContent = calViewDate.toLocaleDateString(undefined, { month: 'long', year: 'numeric' });
-    const grid = document.getElementById('calGrid');
-    grid.innerHTML = '';
-    ['S','M','T','W','T','F','S'].forEach(d => { const el = document.createElement('div'); el.className='cal-dow'; el.textContent=d; grid.appendChild(el); });
-
-    const firstDow = new Date(y, m, 1).getDay();
-    const daysInMonth = new Date(y, m+1, 0).getDate();
-    const tKey = todayKey();
-    const now = new Date(); now.setHours(0,0,0,0);
-
-    for (let i=0; i<firstDow; i++) { const el = document.createElement('div'); el.className='cal-cell empty'; grid.appendChild(el); }
-    for (let d=1; d<=daysInMonth; d++) {
-      const cellDate = new Date(y, m, d);
-      const k = keyOf(cellDate);
-      const cell = document.createElement('div');
-      const hasEntry = entries[k] && !entries[k].deleted;
-      const isFuture = cellDate > now;
-      cell.className = 'cal-cell' + (hasEntry ? ' written' : '') + (k===tKey ? ' today' : '') + (isFuture ? ' future' : '');
-      cell.textContent = d;
-      if (hasEntry) { const dot = document.createElement('div'); dot.className='dot'; cell.appendChild(dot); }
-      if (!isFuture) cell.addEventListener('click', () => openDaily(k));
-      grid.appendChild(cell);
-    }
-  }
-
-  const searchInput = document.getElementById('searchInput');
-  searchInput.addEventListener('input', renderEntriesList);
-  function renderEntriesList() {
-    const q = searchInput.value.trim().toLowerCase();
-    const keys = Object.keys(entries).filter(k => !entries[k].deleted).sort().reverse();
-    const filtered = keys.filter(k => {
-      if (!q) return true;
-      const text = (entries[k].pages || []).map(p => p.text).join(' ').toLowerCase();
-      return k.includes(q) || text.includes(q) || formatShort(k).toLowerCase().includes(q);
-    });
-    const el = document.getElementById('entriesList');
-    if (!filtered.length) { el.innerHTML = '<div class="empty-state">' + (keys.length ? 'No pages match that search.' : 'No pages yet.') + '</div>'; return; }
-    el.innerHTML = filtered.map(k => rowHtml(k)).join('');
-    wireEntryRows(el);
-  }
-
-  /* ============================================================
-     DAILY PAGE
-  ============================================================ */
-  document.getElementById('dailyBack').addEventListener('click', () => showInner('calendar'));
-
-  function openDaily(key) {
-    currentDailyKey = key;
-    currentPageIndex = 0;
-    forceEditMode = false;
-    document.querySelectorAll('.tab[data-inner]').forEach(t => t.classList.remove('active'));
-    document.querySelectorAll('.inner-view').forEach(v => v.classList.remove('active'));
-    document.getElementById('inner-daily').classList.add('active');
-    renderDaily();
-  }
-
-  function currentEntry() {
-    return entries[currentDailyKey] || { id: null, pages: [], allowed_pages: 1, deleted: false };
-  }
-
-  function renderDaily() {
-    const k = currentDailyKey;
-    document.getElementById('dailyEyebrow').textContent = formatWeekday(k) + (k === todayKey() ? ' · Today' : '');
-    document.getElementById('dailyHeading').textContent = formatLong(k);
-
-    const entry = currentEntry();
-    const allowed = entry.allowed_pages || 1;
-    const pageCount = Math.max(entry.pages.length, 1);
-    const isFuture = dateFromKey(k) > new Date(new Date().setHours(0,0,0,0));
-
-    const tabsEl = document.getElementById('dailyPageTabs');
-    tabsEl.innerHTML = '';
-    for (let i=0; i<Math.max(entry.pages.length,1); i++) {
-      const btn = document.createElement('button');
-      btn.className = 'page-tab' + (i===currentPageIndex ? ' active' : '');
-      btn.textContent = 'Page ' + (i+1);
-      btn.addEventListener('click', () => { currentPageIndex = i; renderDaily(); });
-      tabsEl.appendChild(btn);
-    }
-    tabsEl.style.display = (entry.pages.length > 1) ? 'flex' : 'none';
-
-    const page = entry.pages[currentPageIndex] || { text: '', mood: null };
-    const entryText = document.getElementById('entryText');
-    entryText.value = page.text || '';
-    updateCharCounter();
-    selectedMood = page.mood || null;
-    document.querySelectorAll('.mood-btn').forEach(b => b.classList.toggle('selected', b.dataset.mood === selectedMood));
-
-    const hasSavedText = !!(page.text && page.text.trim().length);
-    const canEditAtAll = !isFuture && !entry.deleted;
-    const isSealed = canEditAtAll && hasSavedText && !forceEditMode;
-    const canType = canEditAtAll && !isSealed;
-
-    entryText.disabled = !canType;
-
-    const saveBtn = document.getElementById('saveBtn');
-    const editBtn = document.getElementById('editPageBtn');
-    const status = document.getElementById('saveStatus');
-
-    if (entry.deleted) {
-      status.textContent = 'This page is in Deleted Items.';
-    } else if (isFuture) {
-      status.textContent = 'You can\'t write on a future date yet.';
-    } else {
-      status.textContent = '';
-    }
-
-    if (isSealed) {
-      saveBtn.style.display = 'inline-block';
-      saveBtn.disabled = true;
-      saveBtn.textContent = 'Sealed ✓';
-      saveBtn.classList.add('sealed');
-      editBtn.style.display = 'inline-block';
-    } else {
-      saveBtn.style.display = canEditAtAll ? 'inline-block' : 'none';
-      saveBtn.disabled = false;
-      saveBtn.textContent = 'Seal this page';
-      saveBtn.classList.remove('sealed');
-      editBtn.style.display = 'none';
-    }
-
-    document.getElementById('moods').style.pointerEvents = canType ? 'auto' : 'none';
-    document.getElementById('moods').style.opacity = canType ? '1' : '0.5';
-
-    const metaRow = document.getElementById('dailyMetaRow');
-    metaRow.style.display = (!entry.deleted && !isFuture) ? 'flex' : 'none';
-    const buyBtn = document.getElementById('buyPageBtn');
-    buyBtn.style.display = (pageCount >= allowed) ? 'inline-block' : 'none';
-    document.getElementById('deleteBtn').style.display = (entry.pages.length && entry.pages[0].text && entry.id) ? 'inline-block' : 'none';
-    document.getElementById('aspiraBtn').style.display = (hasSavedText && entry.id) ? 'inline-block' : 'none';
-
-    document.getElementById('deleteConfirm1').style.display = 'none';
-    document.getElementById('deleteConfirm2').style.display = 'none';
-  }
-
-  document.getElementById('editPageBtn').addEventListener('click', () => {
-    forceEditMode = true;
-    renderDaily();
-  });
-
-  function updateCharCounter() {
-    const len = document.getElementById('entryText').value.length;
-    const counter = document.getElementById('charCounter');
-    counter.textContent = len + ' / ' + PAGE_CHAR_LIMIT + ' characters';
-    counter.classList.toggle('near-limit', len >= PAGE_CHAR_LIMIT * 0.85 && len < PAGE_CHAR_LIMIT);
-    counter.classList.toggle('at-limit', len >= PAGE_CHAR_LIMIT);
-    document.getElementById('limitHint').style.display = (len >= PAGE_CHAR_LIMIT) ? 'block' : 'none';
-  }
-  document.getElementById('entryText').addEventListener('input', updateCharCounter);
-
-  document.querySelectorAll('#moods .mood-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-      if (selectedMood === btn.dataset.mood) { selectedMood = null; }
-      else { selectedMood = btn.dataset.mood; }
-      document.querySelectorAll('.mood-btn').forEach(b => b.classList.toggle('selected', b.dataset.mood === selectedMood));
-    });
-  });
-
-  document.getElementById('saveBtn').addEventListener('click', async () => {
-    const text = document.getElementById('entryText').value.trim();
-    const status = document.getElementById('saveStatus');
-    if (!text) { status.textContent = 'Write something before sealing the page.'; return; }
-
-    const k = currentDailyKey;
-    const btn = document.getElementById('saveBtn');
-    const originalLabel = btn.textContent;
-    btn.disabled = true; btn.textContent = 'Sealing...';
-    let succeeded = false;
-    try {
-      const updated = await api('/diary/entry', {
-        method: 'POST',
-        body: { date: k, text, mood: selectedMood, page_index: currentPageIndex },
-      });
-      entries[k] = { id: updated.id, pages: updated.pages, allowed_pages: updated.allowed_pages, deleted: updated.deleted };
-      await refreshProfile();
-      status.textContent = 'Sealed — saved just now.';
-      forceEditMode = false;
-      succeeded = true;
-      renderDaily();
-      renderDashboard();
-      renderCalendar();
-    } catch (e) {
-      status.textContent = e.message || 'Could not save. Try again.';
-    } finally {
-      if (!succeeded) { btn.disabled = false; btn.textContent = originalLabel; }
-    }
-  });
-
-  document.getElementById('buyPageBtn').addEventListener('click', async () => {
-    if (!profile || profile.mindcoins < EXTRA_PAGE_COST) { alert('Not enough MindCoins. You need ' + EXTRA_PAGE_COST + ' to buy another page.'); return; }
-    const ok = await askConfirm('Buy an extra page?', 'This costs ' + EXTRA_PAGE_COST + ' MindCoins from your wallet.', 'Buy for ' + EXTRA_PAGE_COST + ' coins');
-    if (!ok) return;
-    const btn = document.getElementById('buyPageBtn');
-    btn.disabled = true;
-    try {
-      const updated = await api('/payments/buy_extra_page/' + currentDailyKey, { method: 'POST' });
-      entries[currentDailyKey] = { id: updated.id, pages: updated.pages, allowed_pages: updated.allowed_pages, deleted: updated.deleted };
-      await refreshProfile();
-      currentPageIndex = updated.pages.length - 1;
-      forceEditMode = true;
-      renderDaily();
-    } catch (e) {
-      alert(e.message || 'Could not buy an extra page.');
-    } finally {
-      btn.disabled = false;
-    }
-  });
-
-  document.getElementById('aspiraBtn').addEventListener('click', async () => {
-    const entry = currentEntry();
-    if (!entry.id) return;
-    const ok = await askConfirm(
-      'Let Aspira reflect on this page?',
-      'Aspira will read this page once to generate a mood read and a reflective prompt. Your entry text is not stored anywhere by this feature.',
-      'Allow'
-    );
-    if (!ok) return;
-    const btn = document.getElementById('aspiraBtn');
-    btn.disabled = true; btn.textContent = 'Reflecting...';
-    try {
-      const result = await api('/panda/analyze', { method: 'POST', body: { entry_id: entry.id } });
-      document.getElementById('aspiraMood').textContent = result.mood;
-      document.getElementById('aspiraSummary').textContent = result.summary;
-      document.getElementById('aspiraPrompt').textContent = result.prompt;
-      document.getElementById('aspiraResultOverlay').classList.add('active');
-    } catch (e) {
-      alert(e.message || 'Aspira could not reflect on this page right now.');
-    } finally {
-      btn.disabled = false; btn.textContent = '✨ Reflect with Aspira';
-    }
-  });
-
-  document.getElementById('aspiraCloseBtn').addEventListener('click', () => {
-    document.getElementById('aspiraResultOverlay').classList.remove('active');
-  });
-  document.getElementById('aspiraCopyBtn').addEventListener('click', async () => {
-    const text = document.getElementById('aspiraPrompt').textContent;
-    try {
-      await navigator.clipboard.writeText(text);
-      const btn = document.getElementById('aspiraCopyBtn');
-      const original = btn.textContent;
-      btn.textContent = 'Copied!';
-      setTimeout(() => { btn.textContent = original; }, 1500);
-    } catch (e) { /* clipboard not available, silently ignore */ }
-  });
-
-  document.getElementById('deleteBtn').addEventListener('click', () => { document.getElementById('deleteConfirm1').style.display = 'block'; });
-  document.getElementById('deleteConfirmNo1').addEventListener('click', () => { document.getElementById('deleteConfirm1').style.display = 'none'; });
-  document.getElementById('deleteConfirmYes1').addEventListener('click', () => {
-    document.getElementById('deleteConfirm1').style.display = 'none';
-    document.getElementById('deleteConfirm2').style.display = 'block';
-  });
-  document.getElementById('deleteConfirmNo2').addEventListener('click', () => { document.getElementById('deleteConfirm2').style.display = 'none'; });
-  document.getElementById('deleteConfirmYes2').addEventListener('click', async () => {
-    const entry = currentEntry();
-    if (!entry.id) return;
-    try {
-      await api('/diary/entry/' + entry.id, { method: 'DELETE' });
-      entries[currentDailyKey].deleted = true;
-      document.getElementById('deleteConfirm2').style.display = 'none';
-      showInner('calendar');
-    } catch (e) {
-      alert(e.message || 'Could not delete this page.');
-    }
-  });
-
-  /* ============================================================
-     WALLET
-  ============================================================ */
-  async function refreshWallet() {
-    await refreshProfile();
-    try { transactions = await api('/transactions?limit=100'); } catch (e) { console.error(e); }
-    renderWallet();
-  }
-
-  function renderWallet() {
-    document.getElementById('walletCoins').textContent = profile ? profile.mindcoins : 0;
-    const el = document.getElementById('txList');
-    if (!transactions.length) { el.innerHTML = '<div class="empty-state">No transactions yet.</div>'; return; }
-    el.innerHTML = transactions.map(tx => {
-      const positive = tx.amount > 0;
-      return `<div class="tx-row">
+<!-- EDUCATION -->
+<div style="background:var(--white); border-top:1px solid var(--line); border-bottom:1px solid var(--line);">
+<div class="wrap"><section class="sec" id="education">
+  <div class="sh"><span class="sh-num">02 — Education</span><h2 class="sh-title">Where I Studied</h2></div>
+  <div class="edu-layout">
+    <div></div>
+    <div class="edu-card">
+      <div class="edu-card-top">
         <div>
-          <div>${escapeHtml(tx.meta || tx.type)}</div>
-          <div class="tx-meta">${new Date(tx.created_at).toLocaleDateString(undefined,{month:'short',day:'numeric',year:'numeric'})}</div>
+          <div class="edu-degree">Bachelor of Technology — Computer Science & Engineering</div>
+          <div class="edu-institution">Manav Rachna International Institute of Research & Studies · Faridabad, Haryana</div>
         </div>
-        <div class="tx-amt ${positive ? 'earn' : 'spend'}">${positive ? '+' : ''}${tx.amount}</div>
-      </div>`;
-    }).join('');
-  }
+        <div class="edu-period-badge">Sep 2021 — Jun 2025</div>
+      </div>
+      <div class="edu-card-bottom">
+        <div class="edu-stat-block">
+          <div class="edu-stat-label">Degree</div>
+          <div class="edu-stat-val">B.Tech in CSE</div>
+        </div>
+        <div class="edu-stat-block">
+          <div class="edu-stat-label">CGPA</div>
+          <div class="edu-stat-val">6.32 / 10</div>
+        </div>
+        <div class="edu-stat-block">
+          <div class="edu-stat-label">Graduated</div>
+          <div class="edu-stat-val">June 2025</div>
+        </div>
+      </div>
+      <div class="edu-coursework">
+        <div class="edu-coursework-label">Relevant Coursework</div>
+        <div class="edu-course-pills">
+          <span class="edu-pill">Data Structures</span>
+          <span class="edu-pill">Database Management</span>
+          <span class="edu-pill">Software Engineering</span>
+          <span class="edu-pill">Web Development</span>
+          <span class="edu-pill">Operating Systems</span>
+          <span class="edu-pill">Computer Networks</span>
+          <span class="edu-pill">SDLC & System Design</span>
+          <span class="edu-pill">Python Programming</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section></div>
+</div>
 
-  /* ============================================================
-     DELETED ITEMS
-  ============================================================ */
-  function renderDeletedList() {
-    const keys = Object.keys(entries).filter(k => entries[k].deleted).sort().reverse();
-    const el = document.getElementById('deletedList');
-    if (!keys.length) { el.innerHTML = '<div class="empty-state">Nothing here. Deleted pages will wait for you.</div>'; return; }
-    el.innerHTML = keys.map(k => {
-      const e = entries[k];
-      const firstPage = e.pages && e.pages[0] ? e.pages[0] : { text: '' };
-      const firstLine = (firstPage.text.split('\n').find(l => l.trim().length) || '').trim();
-      return `<div class="entry-row deleted-row">
-        <div class="entry-row-date"><span class="weekday">${formatWeekday(k)}</span>${dateFromKey(k).toLocaleDateString(undefined,{month:'short',day:'numeric'})}</div>
-        <div class="entry-row-glimpse"><span>${escapeHtml(firstLine) || '(no text)'}</span></div>
-        <button class="btn-sm sage entry-row-restore" data-key="${k}">Restore (${RESTORE_COST})</button>
-      </div>`;
-    }).join('');
-    el.querySelectorAll('.entry-row-restore').forEach(btn => {
-      btn.addEventListener('click', async (e) => {
-        e.stopPropagation();
-        const k = btn.dataset.key;
-        const entry = entries[k];
-        if (!profile || profile.mindcoins < RESTORE_COST) { alert('Not enough MindCoins to restore this page. You need ' + RESTORE_COST + '.'); return; }
-        try {
-          const updated = await api('/diary/entry/' + entry.id + '/restore', { method: 'POST' });
-          entries[k] = { id: updated.id, pages: updated.pages, allowed_pages: updated.allowed_pages, deleted: updated.deleted };
-          await refreshProfile();
-          renderDeletedList();
-        } catch (err) {
-          alert(err.message || 'Could not restore this page.');
-        }
-      });
-    });
-  }
+<!-- EXPERIENCE -->
+<div style="border-top:1px solid var(--line); border-bottom:1px solid var(--line);">
+<div class="wrap"><section class="sec" id="experience">
+  <div class="sh"><span class="sh-num">03 — Experience</span><h2 class="sh-title">Where I've Worked</h2></div>
+  <div class="exp-layout">
+    <div></div>
+    <div class="exp-list">
+      <div class="exp-entry">
+        <div class="ee-left"><div class="ee-period">Jan — May 2025</div><div class="ee-co">GVS India Pvt. Ltd. · Hyderabad</div></div>
+        <div class="ee-right">
+          <div class="ee-title">Full-Stack Web Developer</div>
+          <ul class="ee-bullets">
+            <li>Built responsive web apps using Django / Flask, HTML/CSS, JavaScript</li>
+            <li>Improved website load time by <strong style="color:var(--ink)">15%</strong> through frontend optimization</li>
+            <li>Managed version control via Git/GitHub across collaborative SDLC</li>
+          </ul>
+          <div class="ee-tags"><span class="ee-tag">Flask</span><span class="ee-tag">Python</span><span class="ee-tag">HTML/CSS</span><span class="ee-tag">Git</span></div>
+        </div>
+      </div>
+      <div class="exp-entry">
+        <div class="ee-left"><div class="ee-period">Oct 2024 — Jan 2025</div><div class="ee-co">Ozibook</div></div>
+        <div class="ee-right">
+          <div class="ee-title">Business Analyst</div>
+          <ul class="ee-bullets">
+            <li>Translated stakeholder needs into clear user stories and documentation</li>
+            <li>Power BI & Excel dashboards identifying <strong style="color:var(--ink)">4–6% efficiency gains</strong></li>
+          </ul>
+          <div class="ee-tags"><span class="ee-tag">Business Strategy</span><span class="ee-tag">Excel</span><span class="ee-tag">Requirement Gathering</span></div>
+        </div>
+      </div>
+      <div class="exp-entry">
+        <div class="ee-left"><div class="ee-period">Jul — Sep 2024</div><div class="ee-co">Hunar Intern</div></div>
+        <div class="ee-right">
+          <div class="ee-title">Python Developer</div>
+          <ul class="ee-bullets">
+            <li>Automation scripts reducing manual data effort by <strong style="color:var(--ink)">50%+</strong></li>
+            <li>Optimized codebase — reduced execution time by <strong style="color:var(--ink)">20%</strong></li>
+            <li>Integrated systems via API calls for scalable data access</li>
+          </ul>
+          <div class="ee-tags"><span class="ee-tag">Python</span><span class="ee-tag">Automation</span><span class="ee-tag">APIs</span></div>
+      </div>
+    </div>
+  </div>
+</section></div>
+</div>
 
-  /* ============================================================
-     SETTINGS
-  ============================================================ */
-  function applyTheme(theme) {
-    currentTheme = theme;
-    const map = { wine: '#7A2A38', sage: '#7C8F6E', gold: '#B9903F' };
-    document.documentElement.style.setProperty('--wine', map[theme] || map.wine);
-    document.querySelectorAll('.swatch').forEach(s => s.classList.toggle('selected', s.dataset.theme === theme));
-  }
-  document.querySelectorAll('.swatch').forEach(sw => {
-    sw.addEventListener('click', () => applyTheme(sw.dataset.theme));
-  });
 
-  document.getElementById('exportBtn').addEventListener('click', () => {
-    const data = { profile, entries };
-    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url; a.download = 'daybook-export-' + todayKey() + '.json';
-    document.body.appendChild(a); a.click(); document.body.removeChild(a);
-    URL.revokeObjectURL(url);
-  });
+<style>
+/* Project link buttons */
+.pi-links {
+  display: flex;
+  gap: 8px;
+  margin-top: 20px;
+  flex-wrap: wrap;
+}
+.pi-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: 'DM Mono', monospace;
+  font-size: 11px;
+  font-weight: 500;
+  padding: 7px 16px;
+  border-radius: 100px;
+  text-decoration: none;
+  letter-spacing: 0.04em;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+/* GitHub button — outline */
+.pi-btn-github {
+  border: 1px solid var(--line);
+  color: var(--ink2);
+  background: transparent;
+}
+.pi-btn-github:hover {
+  border-color: var(--ink);
+  color: var(--ink);
+  background: var(--cream2);
+}
+/* Live Demo button — green filled */
+.pi-btn-live {
+  border: 1px solid var(--green);
+  color: var(--green);
+  background: var(--green-lt);
+}
+.pi-btn-live:hover {
+  background: var(--green);
+  color: #fff;
+}
+/* Not deployed tag */
+.pi-btn-inactive {
+  border: 1px solid var(--line);
+  color: var(--gray);
+  background: transparent;
+  cursor: default;
+  opacity: 0.6;
+}
+/* Featured card overrides */
+.proj-item.featured .pi-btn-github {
+  border-color: rgba(255,255,255,0.3);
+  color: rgba(255,255,255,0.8);
+}
+.proj-item.featured .pi-btn-github:hover {
+  border-color: #fff;
+  color: #fff;
+  background: rgba(255,255,255,0.1);
+}
+.proj-item.featured .pi-btn-live {
+  background: rgba(255,255,255,0.15);
+  border-color: rgba(255,255,255,0.4);
+  color: #fff;
+}
+.proj-item.featured .pi-btn-live:hover {
+  background: rgba(255,255,255,0.28);
+}
+.proj-item.featured .pi-btn-inactive {
+  border-color: rgba(255,255,255,0.2);
+  color: rgba(255,255,255,0.4);
+}
 
-  document.getElementById('deleteAccountBtn').addEventListener('click', async () => {
-    const ok = await askConfirm(
-      'Delete your account?',
-      'This permanently erases your profile, every page you\'ve written, and your MindCoins. This cannot be undone.',
-      'Yes, continue'
-    );
-    if (!ok) return;
-    document.getElementById('deleteAccountPassword').value = '';
-    document.getElementById('deleteAccountError').textContent = '';
-    document.getElementById('deleteAccountOverlay').classList.add('active');
-  });
-  document.getElementById('deleteAccountCancel').addEventListener('click', () => document.getElementById('deleteAccountOverlay').classList.remove('active'));
-  document.getElementById('deleteAccountConfirm').addEventListener('click', async () => {
-    const pw = document.getElementById('deleteAccountPassword').value;
-    const err = document.getElementById('deleteAccountError');
-    err.textContent = '';
-    try {
-      // re-verify password by attempting a fresh login
-      await api('/auth/token', { method: 'POST', form: { username: profile.email, password: pw }, auth: false });
-      await api('/auth/me', { method: 'DELETE' });
-    } catch (e) {
-      err.textContent = e.message === 'Incorrect email or password' ? 'Password is incorrect.' : (e.message || 'Could not delete account.');
-      return;
-    }
-    document.getElementById('deleteAccountOverlay').classList.remove('active');
-    authToken = null; profile = null; entries = {}; transactions = [];
-    showScreen('landing');
-  });
+/* GitHub SVG icon */
+.gh-icon {
+  width: 13px;
+  height: 13px;
+  fill: currentColor;
+  flex-shrink: 0;
+}
+</style>
 
-})();
-</script>
+<!-- Projects Section HTML -->
+<div class="wrap">
+  <section class="sec" id="projects">
+
+    <div class="sh">
+      <span class="sh-num">04 — Projects</span>
+      <h2 class="sh-title">What I've Built</h2>
+    </div>
+
+    <div class="proj-layout">
+      <div></div>
+      <div class="proj-list">
+
+        <!-- PROJECT 01 — Daybook (Featured, newest) -->
+        <div class="proj-item featured">
+          <div>
+            <div class="pi-num">01 — Featured</div>
+            <div class="pi-title">Daybook — Personal Journaling App</div>
+            <div class="pi-desc">
+              Full-stack personal journaling web app with JWT auth, a streak/MindCoins
+              reward economy, mood tagging, and an AI journaling companion (Aspira)
+              powered by the Groq API. Most technically complex project to date.
+            </div>
+            <div class="pi-stack">
+              <span class="pi-pill">FastAPI</span>
+              <span class="pi-pill">MongoDB Atlas</span>
+              <span class="pi-pill">Groq API</span>
+              <span class="pi-pill">JWT Auth</span>
+            </div>
+            <div class="pi-links">
+              <a href="https://github.com/Chanikyasaikumar/daybook-backend"
+                 target="_blank" class="pi-btn pi-btn-github">
+                <svg class="gh-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/>
+                </svg>
+                GitHub
+              </a>
+              <a href="https://chanikyasaikumar.github.io/daybook-frontend/"
+                 target="_blank" class="pi-btn pi-btn-live">
+                ● Live Demo ↗
+              </a>
+            </div>
+          </div>
+          <div class="pi-arrow">↗</div>
+        </div>
+
+        <!-- PROJECT 02 — SpendWise -->
+        <div class="proj-item">
+          <div>
+            <div class="pi-num">02</div>
+            <div class="pi-title">SpendWise — Expense Tracker</div>
+            <div class="pi-desc">
+              Full-stack personal finance tool with budget vs. spend dashboards and
+              subscription renewal notifications.
+            </div>
+            <div class="pi-stack">
+              <span class="pi-pill">Flask</span>
+              <span class="pi-pill">React.js</span>
+              <span class="pi-pill">SQL</span>
+            </div>
+                        <div class="pi-links">
+              <!-- GitHub link — always show -->
+              <a href="https://github.com/Chanikyasaikumar/Spendwise.git"
+                 target="_blank" class="pi-btn pi-btn-github">
+                <svg class="gh-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/>
+                </svg>
+                GitHub
+              </a>
+              <a href="https://spendwise-git-main-chanikya668-4425s-projects.vercel.app/" target="_blank" class="pi-btn pi-btn-live">
+                ● Live Demo ↗
+              </a>
+            </div>
+          </div>
+          <div class="pi-arrow">↗</div>
+        </div>
+
+        <!-- PROJECT 03 — GenoTek -->
+        <div class="proj-item">
+          <div>
+            <div class="pi-num">03</div>
+            <div class="pi-title">GenoTek — AI Hiring Agent</div>
+            <div class="pi-desc">
+              Autonomous AI agent built on Gemini 2.5 Flash that ranks resumes against job
+              descriptions and detects AI-generated candidate responses — reducing manual
+              screening effort significantly.
+            </div>
+            <div class="pi-stack">
+              <span class="pi-pill">Python</span>
+              <span class="pi-pill">Gemini 2.5 Flash API</span>
+              <span class="pi-pill">NLP</span>
+              <span class="pi-pill">AI Agents</span>
+            </div>
+            <div class="pi-links">
+              <a href="https://github.com/Chanikyasaikumar/Hiring_Agent.git"
+                 target="_blank" class="pi-btn pi-btn-github">
+                <svg class="gh-icon" viewBox="0 0 24 24"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg>
+                GitHub
+              </a>
+              <span class="pi-btn pi-btn-inactive">Not deployed</span>
+            </div>
+          </div>
+          <div class="pi-arrow">↗</div>
+        </div>
+
+        <!-- PROJECT 04 — Automated Task & Notification System -->
+        <div class="proj-item">
+          <div>
+            <div class="pi-num">04</div>
+            <div class="pi-title">Automated Task & Notification System</div>
+            <div class="pi-desc">
+              Email-to-Sheets Python automation pipeline with custom alert triggers
+              via Google Cloud APIs. Zero manual effort.
+            </div>
+            <div class="pi-stack">
+              <span class="pi-pill">Python</span>
+              <span class="pi-pill">Google Cloud APIs</span>
+              <span class="pi-pill">Gmail API</span>
+            </div>
+            <div class="pi-links">
+              <a href="https://github.com/Chanikyasaikumar/gmail-to-sheets.git"
+                 target="_blank" class="pi-btn pi-btn-github">
+                <svg class="gh-icon" viewBox="0 0 24 24"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg>
+                GitHub
+              </a>
+              <span class="pi-btn pi-btn-inactive">Not deployed</span>
+            </div>
+          </div>
+          <div class="pi-arrow">↗</div>
+        </div>
+
+        <!-- PROJECT 05 — Library Management System -->
+        <div class="proj-item">
+          <div>
+            <div class="pi-num">05</div>
+            <div class="pi-title">Library Management System</div>
+            <div class="pi-desc">
+              Flask + MongoDB backend app for library operations — book records,
+              user management, and issue/return tracking.
+            </div>
+            <div class="pi-stack">
+              <span class="pi-pill">Flask</span>
+              <span class="pi-pill">MongoDB</span>
+              <span class="pi-pill">Python</span>
+            </div>
+                        <div class="pi-links">
+              <!-- GitHub link — always show -->
+              <a href="https://github.com/Chanikyasaikumar/Library-Management-System.git"
+                 target="_blank" class="pi-btn pi-btn-github">
+                <svg class="gh-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/>
+                </svg>
+                GitHub
+              </a>
+              <a href="https://library-management-system-64bk.onrender.com" target="_blank" class="pi-btn pi-btn-live">
+                ● Live Demo ↗
+              </a>
+            </div>
+          </div>
+          <div class="pi-arrow">↗</div>
+        </div>
+
+      </div><!-- end proj-list -->
+    </div><!-- end proj-layout -->
+
+  </section>
+</div>
+
+
+<!-- SKILLS -->
+<div style="background:var(--white); border-top:1px solid var(--line); border-bottom:1px solid var(--line);">
+<div class="wrap"><section class="sec" id="skills">
+  <div class="sh"><span class="sh-num">05 — Skills</span><h2 class="sh-title">What I Know</h2></div>
+  <div class="skills-layout-wrap">
+    <div></div>
+    <div class="skills-grid">
+      <div class="skill-box"><div class="sb-label">Languages</div><div class="sb-items"><span class="sb-item">Python</span><span class="sb-item">SQL</span><span class="sb-item">JavaScript</span></div></div>
+      <div class="skill-box"><div class="sb-label">Web Development</div><div class="sb-items"><span class="sb-item">Flask</span><span class="sb-item">HTML5 / CSS3</span><span class="sb-item">React.js</span></div></div>
+      <div class="skill-box"><div class="sb-label">Data & Analytics</div><div class="sb-items"><span class="sb-item">Tableau · Power BI</span><span class="sb-item">Pandas · NumPy</span><span class="sb-item">EDA · ETL Pipelines</span></div></div>
+      <div class="skill-box"><div class="sb-label">Databases</div><div class="sb-items"><span class="sb-item">SQL / RDBMS</span><span class="sb-item">MongoDB</span><span class="sb-item">Microsoft Excel</span></div></div>
+      <div class="skill-box"><div class="sb-label">Tools & Cloud</div><div class="sb-items"><span class="sb-item">Git / GitHub</span><span class="sb-item">Google Cloud APIs</span><span class="sb-item">AWS Cloud</span></div></div>
+      <div class="skill-box"><div class="sb-label">Core Concepts</div><div class="sb-items"><span class="sb-item">SDLC · System Design</span><span class="sb-item">ML Lifecycle</span><span class="sb-item">Automation · Business Analysis</span></div></div>
+    </div>
+  </div>
+</section></div>
+</div>
+
+<!-- CERTIFICATIONS -->
+<!-- ============================================================
+     CERTIFICATIONS SECTION — Top 5 only
+     Replace your existing certifications section with this
+     ============================================================ -->
+
+<!-- CERTIFICATIONS -->
+<div class="wrap"><section class="sec" id="certifications">
+  <div class="sh"><span class="sh-num">06 — Certifications</span><h2 class="sh-title">What I've Earned</h2></div>
+  <div class="certs-layout">
+    <div></div>
+    <div class="certs-grid">
+
+      <!-- 1. Microsoft & LinkedIn — Generative AI -->
+      <div class="cert-card">
+        <div class="cert-mark"></div>
+        <div>
+          <div class="cert-cn">Career Essentials in Generative AI</div>
+          <div class="cert-ci">Microsoft & LinkedIn</div>
+          <div class="cert-cd">Jul 2026</div>
+        </div>
+      </div>
+
+      <!-- 2. AWS -->
+      <div class="cert-card">
+        <div class="cert-mark"></div>
+        <div>
+          <div class="cert-cn">AWS Educate Introduction to Cloud 101</div>
+          <div class="cert-ci">Amazon Web Services (AWS)</div>
+          <div class="cert-cd">Apr 2026</div>
+        </div>
+      </div>
+
+      <!-- 3. McKinsey -->
+      <div class="cert-card">
+        <div class="cert-mark"></div>
+        <div>
+          <div class="cert-cn">McKinsey Forward Program</div>
+          <div class="cert-ci">McKinsey & Company</div>
+          <div class="cert-cd">Dec 2025</div>
+        </div>
+      </div>
+
+      <!-- 4. IBM SQL -->
+      <div class="cert-card">
+        <div class="cert-mark"></div>
+        <div>
+          <div class="cert-cn">SQL and Relational Databases 101</div>
+          <div class="cert-ci">Cognitive Class (IBM)</div>
+          <div class="cert-cd">Jul 2024</div>
+        </div>
+      </div>
+
+      <!-- 5. Accenture — Data Analytics -->
+      <div class="cert-card">
+        <div class="cert-mark"></div>
+        <div>
+          <div class="cert-cn">Data Analytics & Visualization Job Simulation</div>
+          <div class="cert-ci">Accenture (via Forage)</div>
+          <div class="cert-cd">Apr 2024</div>
+        </div>
+      </div>
+
+            <!-- 6. Data Science BCGX -->
+      <div class="cert-card">
+        <div class="cert-mark"></div>
+        <div>
+          <div class="cert-cn">Data Science Job Simulation</div>
+          <div class="cert-ci">BCG X (via Forage)</div>
+          <div class="cert-cd">Apr 2024</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section></div>
+
+<!-- No new CSS needed — reuses existing .cert-card, .cert-mark, .cert-cn, .cert-ci, .cert-cd styles -->
+
+<!-- CONTACT -->
+<section id="contact">
+  <div class="contact-wrap">
+    <div class="contact-grid">
+      <div>
+        <div class="c-eyebrow">Let's work together</div>
+        <div class="c-head">Open to<br/><em>great roles.</em></div>
+        <p class="c-sub">Looking for full-time opportunities in Data Analytics, Web Development, Software Engineering, AI & Automation. Open to hybrid and remote roles across India.</p>
+      </div>
+      <div class="c-right">
+        <a href="mailto:chanikya668@gmail.com" class="c-link">
+          <div><div class="c-link-label">Email</div><div class="c-link-val">Send a message</div></div>
+          <div class="c-link-arr">↗</div>
+        </a>
+        <a href="https://linkedin.com/in/chanikya-sai-kumar" target="_blank" class="c-link">
+          <div><div class="c-link-label">LinkedIn</div><div class="c-link-val">Chanikya Sai Kumar Devarasetty</div></div>
+          <div class="c-link-arr">↗</div>
+        </a>
+        <a href="tel:+91-7815826664" class="c-link">
+          <div><div class="c-link-label">Phone</div><div class="c-link-val">+91-78158 26664</div></div>
+          <div class="c-link-arr">↗</div>
+        </a>
+        <a href="https://github.com/Chanikyasaikumar"
+        target="_blank"
+        class="c-link">
+      <div>
+    <div class="c-link-label">GitHub</div>
+    <div class="c-link-val">Chanikya</div>
+  </div>
+  <div class="c-link-arr">↗</div>
+</a>
+      </div>
+    </div>
+  </div>
+  <div class="c-footer" style="margin-top:80px; padding-top:32px; border-top:1px solid #1a1a1a; display:flex; justify-content:space-between; align-items:center;">
+    <div class="cf-brand">Chanikya Sai Kumar</div>
+    <div class="cf-copy">© 2025 · Hyderabad, India</div>
+    <div class="cf-copy">All rights reserved</div>
+  </div>
+</section>
 
 </body>
 </html>
